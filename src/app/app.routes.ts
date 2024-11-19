@@ -7,9 +7,11 @@ import { ReportsComponent } from './reports/reports.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AuthGuard } from './auth.guard';
+import { StatusComponent } from './status/status.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'status', component: StatusComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
