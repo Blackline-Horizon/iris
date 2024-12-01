@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClientModule, HttpClient } from '@angular/common/http'; // Import HttpClientModule
 import { CommonModule } from '@angular/common';
-import { environment } from '../../environments/environments.local';
+import { environment } from '../../../environments/environments.local';
 
 // Define the types for the services and their status
 interface ServiceUrls {
