@@ -1,20 +1,19 @@
-// src/app/dashboard/dashboard.component.ts
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { StateService } from '../../services/state.service';
+import { LogoutButtonComponent } from '../../shared/logout-button.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [],
+  imports: [LogoutButtonComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
 
-  constructor(private router: Router) {}
+  username: string | null = null;
 
-  logout() {
-    localStorage.removeItem('isAuthenticated');
-    this.router.navigate(['/login']);
+  constructor(private stateService: StateService) {
+    this.username = this.stateService.getState('username');
   }
 }
