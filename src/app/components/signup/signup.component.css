@@ -1,22 +1,38 @@
-form {
-  display: flex;
-  flex-direction: column;
-  width: 300px;
-  margin: 0 auto;
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500&display=swap");
+
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
 }
-label {
-  margin: 10px 0 5px;
+
+h2 {
+  font-size: 1.875rem;
+  font-weight: bold;
 }
+
 input {
-  margin-bottom: 15px;
+  transition: all 0.3s ease;
 }
+
+input:focus {
+  border-color: #a6192e;
+}
+
 button {
-  padding: 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  cursor: pointer;
+  transition: all 0.3s ease;
 }
+
 button:hover {
-  background-color: #45a049;
+  background-color: #8c0e22;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(174, 20, 42, 0.5);
+}
+
+.font-body {
+  font-family: "Roboto", sans-serif;
+  font-weight: 100;
 }
