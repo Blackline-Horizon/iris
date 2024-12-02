@@ -1,5 +1,5 @@
 nav {
-  background-color: #000000; /* Solid black background */
+  background-color: #000000;
   transition: transform 0.3s ease-in-out;
 }
 
@@ -23,10 +23,9 @@ nav {
     width: 100%;
     height: 100%;
     z-index: 999;
-    background-color: rgba(0, 0, 0, 1); /* Full opacity black background */
+    background-color: rgba(0, 0, 0, 1);
   }
 
-  /* Close button */
   .md:hidden {
     display: block;
   }
@@ -60,13 +59,13 @@ a.router-link-active {
 }
 
 a i {
-  color: #ae142a; /* Red color for the icons initially */
+  color: #ae142a;
   margin-right: 0.75rem;
   transition: all 0.3s ease;
 }
 
 a:hover i {
-  color: white; /* Change icon color to white on hover */
+  color: white;
 }
 
 .font-body {
@@ -74,7 +73,6 @@ a:hover i {
   font-weight: 100;
 }
 
-/* Additional styling for BlackLineHorizon text */
 nav .text-center p {
   margin: 0;
   line-height: 1.2;
@@ -88,7 +86,31 @@ nav .text-red-600 {
   color: #ae142a;
 }
 
-/* Spacing between sections */
 nav ul + ul {
-  margin-top: 24px;
+  margin-top: 16px;
+}
+
+nav ul {
+  margin-bottom: 16px;
+}
+
+nav .space-y-4 li {
+  margin-bottom: 16px;
+}
+
+nav .mt-auto {
+  margin-top: auto;
+}
+
+nav.translate-x-0 {
+  transform: translateX(0);
+}
+
+@media (max-width: 767px) {
+  nav {
+    background-color: rgba(0, 0, 0, 1);
+  }
+  nav .mt-auto {
+    margin-top: auto;
+  }
 }
