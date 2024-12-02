@@ -1,21 +1,29 @@
-// src/app/components/login/login.component.ts
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { StateService } from '../../services/state.service'; // Import StateService
+import { AuthService } from '../../services/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  imports: [FormsModule]
 })
 export class LoginComponent {
+  username: string = '';
+  password: string = '';
 
-  constructor(private router: Router, private stateService: StateService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  login() {
-    // Set isAuthenticated to true in the state when user logs in
-    this.stateService.setState('isAuthenticated', true);
-    this.stateService.setState('username', 'JohnDoe'); // Example username, replace with actual logic
-    this.router.navigate(['/dashboard']);
+  onSubmit() {
+    this.authService.login(this.username, this.password)
+      .then(() => {
+        this.router.navigate(['/dashboard']); // Redirect to the dashboard or home page after successful login
+      })
+      .catch((error) => {
+        console.error('Login failed', error);
+        alert('Login failed. Please check your credentials and try again.');
+      });
   }
 }
