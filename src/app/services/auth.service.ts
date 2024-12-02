@@ -23,7 +23,6 @@ export class AuthService {
     this.userPool = new CognitoUserPool(poolData);
   }
 
-  // Sign-up method
   signUp(
     username: string,
     password: string,
@@ -35,7 +34,7 @@ export class AuthService {
       new CognitoUserAttribute({ Name: 'email', Value: email }),
       new CognitoUserAttribute({
         Name: 'name',
-        Value: `${firstName} ${lastName}`, // Ensuring it's in the correct format
+        Value: `${firstName} ${lastName}`,
       }),
     ];
 
@@ -56,7 +55,6 @@ export class AuthService {
     });
   }
 
-  // Login method
   login(username: string, password: string): Promise<any> {
     const authenticationDetails = new AuthenticationDetails({
       Username: username,
@@ -72,7 +70,7 @@ export class AuthService {
       cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
           this.stateService.setState('isAuthenticated', true);
-          this.router.navigate(['/dashboard']); // Redirect to a protected route
+          this.router.navigate(['/dashboard']);
           resolve(result);
         },
         onFailure: (err) => {
@@ -83,7 +81,6 @@ export class AuthService {
     });
   }
 
-  // Logout method
   logout(): void {
     const cognitoUser = this.userPool.getCurrentUser();
     if (cognitoUser) {
@@ -102,15 +99,14 @@ export class AuthService {
     return new Promise((resolve, reject) => {
       cognitoUser.confirmRegistration(confirmationCode, true, (err, result) => {
         if (err) {
-          reject(err); // Reject if there's an error (e.g., invalid confirmation code)
+          reject(err);
         } else {
-          resolve(result); // Successfully confirmed
+          resolve(result);
         }
       });
     });
   }
 
-  // Check if the user is authenticated
   isAuthenticated(): boolean {
     const cognitoUser = this.userPool.getCurrentUser();
     return cognitoUser != null && cognitoUser.getSignInUserSession() != null;

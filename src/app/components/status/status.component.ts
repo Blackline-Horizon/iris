@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClientModule, HttpClient } from '@angular/common/http'; // Import HttpClientModule
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environments.local';
 
-// Define the types for the services and their status
 interface ServiceUrls {
   ATHENA: string;
   ATLAS: string;
@@ -16,7 +15,7 @@ interface ServiceUrls {
 @Component({
   selector: 'app-status',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],  // Import HttpClientModule here
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './status.component.html',
   styleUrls: ['./status.component.css']
 })
@@ -30,7 +29,6 @@ export class StatusComponent implements OnInit {
     ORACLE: 'Checking...',
   };
 
-  // Accessing service URLs from environment variables
   private serviceUrls: ServiceUrls = {
     ATHENA: environment.ATHENA,
     ATLAS: environment.ATLAS,
@@ -43,7 +41,6 @@ export class StatusComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    // Check the status of each service
     Object.keys(this.serviceUrls).forEach((service) => {
       this.checkServiceStatus(service as keyof ServiceUrls, this.serviceUrls[service as keyof ServiceUrls]);
     });

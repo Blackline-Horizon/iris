@@ -1,8 +1,67 @@
-<div>
-  <h2>Login</h2>
-  <form (ngSubmit)="onSubmit()">
-    <input type="text" [(ngModel)]="username" name="username" placeholder="Username" required />
-    <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required />
-    <button type="submit">Login</button>
-  </form>
+<div
+  class="flex h-screen bg-cover bg-center"
+  style="
+    background-image: url('https://images.unsplash.com/photo-1730584474196-b0e8a29303e8?q=80&w=2454&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  "
+>
+  <div
+    class="w-full md:w-1/2 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white p-8"
+  >
+    <h2 class="font-bold mb-6 text-center">
+      <span class="text-5xl text-white">blackline</span>
+      <span class="text-5xl text-[#ae142a]">horizon</span>
+    </h2>
+
+    <form (ngSubmit)="onSubmit()" class="w-full max-w-xs">
+      <div class="mb-4 flex items-center relative">
+        <input
+          type="text"
+          [(ngModel)]="username"
+          name="username"
+          placeholder="Username"
+          required
+          class="w-full p-3 pr-10 pl-4 border-b border-white bg-transparent text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-[#ae142a] font-body"
+        />
+        <i
+          class="far fa-user text-white absolute right-3 top-1/2 transform -translate-y-1/2"
+        ></i>
+      </div>
+
+      <div class="mb-6 flex items-center relative">
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Password"
+          required
+          class="w-full p-3 pr-10 pl-4 mt-3 border-b border-white bg-transparent text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-[#ae142a] font-body"
+        />
+        <i
+          class="far fa-eye-slash text-white absolute right-3 top-1/2 transform -translate-y-1/2"
+        ></i>
+      </div>
+
+      <div class="font-body text-sm text-white text-center mb-5">
+        <a href="/register" class="text-xs hover:underline">Confirm Account?</a>
+      </div>
+
+      <div class="mb-4">
+        <button
+          type="submit"
+          class="text-xs w-full py-4 rounded-full bg-[#ae142a] text-white hover:bg-[#8c0e22] focus:outline-none focus:ring-2 focus:ring-[#8c0e22]"
+        >
+          LOG IN
+        </button>
+      </div>
+
+      <div class="font-body text-sm text-white text-center">
+        <a href="/register" class="text-xs hover:underline"
+          >Don't have an account?
+          <span style="text-decoration: underline">Register Now</span></a
+        >
+      </div>
+    </form>
+  </div>
+
+  <div class="hidden md:block w-1/2"></div>
 </div>

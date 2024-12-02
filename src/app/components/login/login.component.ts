@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  imports: [FormsModule]
+  imports: [FormsModule],
 })
 export class LoginComponent {
   username: string = '';
@@ -17,9 +17,10 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.authService.login(this.username, this.password)
+    this.authService
+      .login(this.username, this.password)
       .then(() => {
-        this.router.navigate(['/dashboard']); // Redirect to the dashboard or home page after successful login
+        this.router.navigate(['/dashboard']);
       })
       .catch((error) => {
         console.error('Login failed', error);

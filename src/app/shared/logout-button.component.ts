@@ -11,6 +11,6 @@ export class LogoutButtonComponent {
   constructor(private authService: AuthService) {}
 
   logout() {
-    this.authService.logout(); // Use AuthService to log out
+    this.authService.logout();
   }
 }
