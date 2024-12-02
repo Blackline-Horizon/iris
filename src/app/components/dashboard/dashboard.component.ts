@@ -12,6 +12,7 @@ import { LogoutButtonComponent } from '../../shared/logout-button.component';
 export class DashboardComponent {
 
   username: string | null = null;
+  jwt: string | null = null;
 
   constructor(private stateService: StateService) {
     this.username = this.stateService.getState('username');
