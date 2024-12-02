@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { StateService } from './services/state.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -11,4 +13,13 @@ import { RouterModule } from '@angular/router';
     </main>
   `
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor(private stateService: StateService, private router: Router) {
+    const isAuthenticated = this.stateService.getState('isAuthenticated');
+
+    if (isAuthenticated === false) {
+      this.stateService.clearState();
+      this.router.navigate(['/login']);
+    }
+  }
+}

@@ -1,7 +1,5 @@
-// src/app/components/logout-button/logout-button.component.ts
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { StateService } from '../services/state.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-logout-button',
@@ -10,11 +8,9 @@ import { StateService } from '../services/state.service';
   styleUrls: ['./logout-button.component.css']
 })
 export class LogoutButtonComponent {
-  constructor(private router: Router, private stateService: StateService) {}
+  constructor(private authService: AuthService) {}
 
   logout() {
-    // Set isAuthenticated to false, this clears the state
-    this.stateService.setState('isAuthenticated', false);
-    this.router.navigate(['/login']); // Redirect to login page
+    this.authService.logout();
   }
 }

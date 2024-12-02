@@ -1,21 +1,37 @@
-// src/app/components/login/login.component.ts
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { StateService } from '../../services/state.service'; // Import StateService
+import { AuthService } from '../../services/auth.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  imports: [FormsModule, CommonModule],
 })
 export class LoginComponent {
+  username: string = '';
+  password: string = '';
+  errorMessage: string = '';
 
-  constructor(private router: Router, private stateService: StateService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  login() {
-    // Set isAuthenticated to true in the state when user logs in
-    this.stateService.setState('isAuthenticated', true);
-    this.stateService.setState('username', 'JohnDoe'); // Example username, replace with actual logic
-    this.router.navigate(['/dashboard']);
+  onSubmit() {
+    this.authService
+      .login(this.username, this.password)
+      .then(() => {
+        this.router.navigate(['/dashboard']);
+      })
+      .catch((error) => {
+        if (error.code === 'UserNotConfirmedException') {
+          this.errorMessage = 'Your account has not been verified, please check your email';
+        } else if (error.code === 'UserNotFoundException') {
+          this.errorMessage = 'Your account does not exist';
+        } else {
+          this.errorMessage = 'Your credentials are invalid';
+        }
+      });
   }
 }
