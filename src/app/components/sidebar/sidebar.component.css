@@ -1,0 +1,7 @@
+/* Optional: Add any additional custom styling here */
+
+/* Tailwind will handle most of the styling for responsiveness, but you can adjust things like active links, hover states, etc. */
+.sidebar a.active {
+  background-color: #4caf50; /* Active link color */
+  color: white;
+}
