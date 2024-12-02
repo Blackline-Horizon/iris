@@ -69,9 +69,35 @@ export class AuthService {
     return new Promise((resolve, reject) => {
       cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
-          this.stateService.setState('isAuthenticated', true);
-          this.router.navigate(['/dashboard']);
-          resolve(result);
+          // Fetch user attributes after successful login
+          cognitoUser.getUserAttributes((err, attributes) => {
+            if (err) {
+              reject(err);
+            } else {
+              // Ensure `attributes` is an array (it should be, but we handle any edge case)
+              const userAttributes: CognitoUserAttribute[] = attributes || [];
+
+              // Extract firstName, lastName, and JWT token
+              const firstName = this.getAttributeValue(
+                userAttributes,
+                'given_name'
+              );
+              const lastName = this.getAttributeValue(
+                userAttributes,
+                'family_name'
+              );
+              const jwtToken = result.getIdToken().getJwtToken();
+
+              this.stateService.setState('isAuthenticated', true);
+              this.stateService.setState('username', username);
+              this.stateService.setState('firstName', firstName);
+              this.stateService.setState('lastName', lastName);
+              this.stateService.setState('jwtToken', jwtToken);
+
+              this.router.navigate(['/dashboard']);
+              resolve(result);
+            }
+          });
         },
         onFailure: (err) => {
           this.stateService.setState('isAuthenticated', false);
@@ -85,6 +111,7 @@ export class AuthService {
     const cognitoUser = this.userPool.getCurrentUser();
     if (cognitoUser) {
       cognitoUser.signOut();
+      this.stateService.clearState();
       this.stateService.setState('isAuthenticated', false);
       this.router.navigate(['/login']);
     }
@@ -110,5 +137,13 @@ export class AuthService {
   isAuthenticated(): boolean {
     const cognitoUser = this.userPool.getCurrentUser();
     return cognitoUser != null && cognitoUser.getSignInUserSession() != null;
+  }
+
+  private getAttributeValue(
+    attributes: CognitoUserAttribute[],
+    name: string
+  ): string {
+    const attribute = attributes.find((attr) => attr.Name === name);
+    return attribute ? attribute.Value : '';
   }
 }
