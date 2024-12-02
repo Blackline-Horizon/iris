@@ -31,7 +31,6 @@ export class SignupComponent {
         this.lastName
       )
       .then((result) => {
-        console.log('Sign-up successful', result);
         this.router.navigate(['/login']);
       })
       .catch((error) => {
