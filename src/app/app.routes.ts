@@ -9,6 +9,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { AuthGuard } from './services/auth.guard';  // Import the AuthGuard
 import { StatusComponent } from './components/status/status.component';
+import { ConfirmEmailComponent } from './components/confirmation-email/confirm-email.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -20,5 +21,6 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
   { path: 'register', component: SignupComponent },
+  { path: 'confirm', component: ConfirmEmailComponent },
   { path: '**', redirectTo: '/login' }
 ];

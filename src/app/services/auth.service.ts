@@ -93,6 +93,23 @@ export class AuthService {
     }
   }
 
+  confirmSignUp(username: string, confirmationCode: string): Promise<any> {
+    const cognitoUser = new CognitoUser({
+      Username: username,
+      Pool: this.userPool,
+    });
+
+    return new Promise((resolve, reject) => {
+      cognitoUser.confirmRegistration(confirmationCode, true, (err, result) => {
+        if (err) {
+          reject(err); // Reject if there's an error (e.g., invalid confirmation code)
+        } else {
+          resolve(result); // Successfully confirmed
+        }
+      });
+    });
+  }
+
   // Check if the user is authenticated
   isAuthenticated(): boolean {
     const cognitoUser = this.userPool.getCurrentUser();
