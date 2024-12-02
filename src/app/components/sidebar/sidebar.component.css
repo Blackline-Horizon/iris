@@ -25,6 +25,11 @@ nav {
     z-index: 999;
     background-color: rgba(0, 0, 0, 1); /* Full opacity black background */
   }
+
+  /* Close button */
+  .md:hidden {
+    display: block;
+  }
 }
 
 ul {
@@ -67,4 +72,23 @@ a:hover i {
 .font-body {
   font-family: "Roboto", sans-serif;
   font-weight: 100;
+}
+
+/* Additional styling for BlackLineHorizon text */
+nav .text-center p {
+  margin: 0;
+  line-height: 1.2;
+}
+
+nav .text-white {
+  color: white;
+}
+
+nav .text-red-600 {
+  color: #ae142a;
+}
+
+/* Spacing between sections */
+nav ul + ul {
+  margin-top: 24px;
 }

@@ -3,13 +3,21 @@
      transition-transform transform md:translate-x-0"
      [class.translate-x-full]="!isVisible">
   
-  <div class="md:hidden flex justify-end">
+  <!-- Close button for mobile view -->
+  <div class="md:hidden flex justify-end mb-8">
     <button (click)="closeSidebar()" class="text-white text-3xl">
       &#10005;
     </button>
   </div>
 
-  <ul class="space-y-4 mt-8">
+  <!-- BlacklineHorizon Text -->
+  <div class="text-center mb-12 mt-16">
+    <p class="text-white text-4xl font-bold">blackline</p>
+    <p class="text-red-600 text-4xl font-bold">horizon</p>
+  </div>
+
+  <!-- Sidebar Links -->
+  <ul class="space-y-4 mt-4">
     <li>
       <a 
         routerLink="/dashboard" 
@@ -37,15 +45,13 @@
         <i class="fas fa-chart-line text-[#ae142a] mr-3 transition-all duration-300 hover:text-white"></i> Reports
       </a>
     </li>
-    <li>
-      <a 
-        routerLink="/settings" 
-        routerLinkActive="active" 
-        class="flex items-center py-2 px-4 rounded hover:bg-[#ae142a] transition-all duration-300"
-        (click)="closeSidebar()">
-        <i class="fas fa-cogs text-[#ae142a] mr-3 transition-all duration-300 hover:text-white"></i> Settings
-      </a>
-    </li>
+  </ul>
+
+  <!-- Spacing -->
+  <div class="mt-12"></div>
+
+  <!-- Profile Link -->
+  <ul class="space-y-4 mt-4">
     <li>
       <a 
         routerLink="/user-profile" 
@@ -53,6 +59,19 @@
         class="flex items-center py-2 px-4 rounded hover:bg-[#ae142a] transition-all duration-300"
         (click)="closeSidebar()">
         <i class="fas fa-user text-[#ae142a] mr-3 transition-all duration-300 hover:text-white"></i> Profile
+      </a>
+    </li>
+  </ul>
+
+  <!-- Settings at the bottom -->
+  <ul class="mt-8">
+    <li>
+      <a 
+        routerLink="/settings" 
+        routerLinkActive="active" 
+        class="flex items-center py-2 px-4 rounded hover:bg-[#ae142a] transition-all duration-300"
+        (click)="closeSidebar()">
+        <i class="fas fa-cogs text-[#ae142a] mr-3 transition-all duration-300 hover:text-white"></i> Settings
       </a>
     </li>
   </ul>
