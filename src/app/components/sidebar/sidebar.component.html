@@ -1,44 +1,64 @@
-<nav class="bg-gray-800 text-white w-64 min-h-screen p-4 md:block hidden">
-  <ul>
+<nav
+  *ngIf="isVisible"
+  class="bg-gray-800 text-white w-64 min-h-screen p-4 fixed top-0 left-0 z-50 md:relative md:flex md:flex-col md:w-64 transition-transform transform md:translate-x-0"
+  [class.translate-x-full]="!isVisible"
+>
+  <div class="md:hidden flex justify-end">
+    <button (click)="closeSidebar()" class="text-white text-3xl">
+      &#10005;
+    </button>
+  </div>
+
+  <ul class="space-y-4 mt-8">
     <li>
       <a
         routerLink="/dashboard"
         routerLinkActive="active"
         class="block py-2 px-4 rounded hover:bg-gray-700"
-        >Dashboard</a
+        (click)="closeSidebar()"
       >
+        Dashboard
+      </a>
     </li>
     <li>
       <a
         routerLink="/map"
         routerLinkActive="active"
         class="block py-2 px-4 rounded hover:bg-gray-700"
-        >Map</a
+        (click)="closeSidebar()"
       >
+        Map
+      </a>
     </li>
     <li>
       <a
         routerLink="/reports"
         routerLinkActive="active"
         class="block py-2 px-4 rounded hover:bg-gray-700"
-        >Reports</a
+        (click)="closeSidebar()"
       >
+        Reports
+      </a>
     </li>
     <li>
       <a
         routerLink="/settings"
         routerLinkActive="active"
         class="block py-2 px-4 rounded hover:bg-gray-700"
-        >Settings</a
+        (click)="closeSidebar()"
       >
+        Settings
+      </a>
     </li>
     <li>
       <a
         routerLink="/user-profile"
         routerLinkActive="active"
         class="block py-2 px-4 rounded hover:bg-gray-700"
-        >Profile</a
+        (click)="closeSidebar()"
       >
+        Profile
+      </a>
     </li>
   </ul>
 </nav>

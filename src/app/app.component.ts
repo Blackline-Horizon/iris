@@ -31,7 +31,7 @@ import { CommonModule } from '@angular/common'; // Import CommonModule for ngIf
   `
 })
 export class AppComponent implements OnInit {
-  showSidebar: boolean = true; // Default is true for desktop
+  showSidebar: boolean = true;
 
   constructor(private stateService: StateService, private router: Router) {
     const isAuthenticated = this.stateService.getState('isAuthenticated');
@@ -41,7 +41,6 @@ export class AppComponent implements OnInit {
       this.router.navigate(['/login']);
     }
 
-    // Listen for route changes to update sidebar visibility
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.checkRoute();
@@ -51,37 +50,36 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.checkRoute();
-    this.checkScreenSize();  // Check screen size when app starts
+    this.checkScreenSize();
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    this.checkScreenSize(); // Update sidebar visibility on window resize
+    this.checkScreenSize();
   }
 
   checkRoute() {
     const currentRoute = this.router.url;
     const hideSidebarRoutes = ['/login', '/signup', '/confirm'];
 
-    // Hide sidebar on specific routes
     if (hideSidebarRoutes.includes(currentRoute)) {
       this.showSidebar = false;
     } else {
-      this.showSidebar = true; // Show sidebar on other routes
+      this.showSidebar = true;
     }
   }
 
   checkScreenSize() {
-    if (window.innerWidth >= 768) { // Desktop size
-      this.showSidebar = true;  // Always show sidebar on desktop
+    if (window.innerWidth >= 768) {
+      this.showSidebar = true;
     } else {
-      this.showSidebar = false; // Default to closed on mobile
+      this.showSidebar = false;
     }
   }
 
   toggleSidebar() {
     if (window.innerWidth < 768) {
-      this.showSidebar = !this.showSidebar; // Toggle on mobile
+      this.showSidebar = !this.showSidebar;
     }
   }
 }
