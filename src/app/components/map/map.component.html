@@ -1,9 +1,13 @@
-<p>map works!</p>
+<p>Map works!</p>
 <div style="height: 400px; width: 100%;">
-    <google-map
-      height="400px"
-      width="50%"
-      [center]="{ lat: 37.7749, lng: -122.4194 }"
-      [zoom]="12">
-    </google-map>
-  </div>
+  <google-map height="600px" width="800px" [options]="options">
+
+    @for (marker of markers; track marker) {
+      <map-advanced-marker
+        #markerElem="mapAdvancedMarker"
+        [position]="{ lat: marker.lat, lng: marker.lng }"
+      />
+    }
+
+  </google-map>
+</div>
