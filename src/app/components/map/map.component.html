@@ -1,7 +1,6 @@
-<!-- map.component.html -->
 <div
-  class="min-h-screen w-full bg-gradient-to-b from-[#f8f9fa] to-[#ffffff]
-             flex flex-col items-center py-8 px-4 space-y-6"
+  class="min-h-screen w-full bg-gradient-to-b from-[#1a1a1a] to-[#2b2b2b]
+             flex flex-col items-center py-8 px-4 space-y-6 text-white"
 >
   <!-- Top Title Section -->
   <div class="text-center flex flex-col items-center mb-4">
@@ -11,43 +10,33 @@
     >
       Blackline Horizon Interactive Map
     </h1>
-    <!-- Optional subtitle; remove if not needed -->
-    <p class="text-sm md:text-base text-gray-700 max-w-xl">
-      A lighter UI with subtle red accents, removing dark/grey backgrounds.
+    <!-- Optional subtitle -->
+    <p class="text-sm md:text-base text-gray-400 max-w-xl">
+      A dynamic, interactive map designed to visualize safety trends and alerts.
     </p>
   </div>
 
   <!-- Main Layout: 2/3 for Map, 1/3 for Filters/Markers -->
-  <div class="mx-auto w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-300">
+  <div class="mx-auto w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6">
     
     <!-- Left Column: Map Box -->
     <div
-      class="col-span-2 flex flex-col rounded-lg bg-white shadow-md
-             p-5 space-y-5 border border-gray-200
-             border-l-4 border-l-[#d84f4f]
-             hover:shadow-lg transition-shadow duration-300"
+      class="col-span-2 flex flex-col rounded-lg bg-[#2e2e2e] shadow-lg
+             p-5 space-y-5 border border-gray-600
+             border-l-4 border-l-[#d84f4f] transition-shadow duration-300"
     >
       <!-- Title + Heatmap Indicator -->
       <div class="flex items-center justify-between">
-        <h2 class="text-xl md:text-2xl font-bold text-gray-800">
+        <h2 class="text-xl md:text-2xl font-bold text-white">
           Interactive Map
         </h2>
-        <!-- If heatOn is false, show an indicator
-        <div *ngIf="!heatOn"
-             class="ml-2 rounded-full bg-[#d84f4f] px-3 py-1 text-xs
-                    font-medium text-white border border-red-300 animate-pulse"
-        >
-          (No Heatmap)
-        </div>
-        -->
       </div>
 
       <!-- Map Container -->
       <div
         id="leaflet-map"
-        class="h-[550px] w-full rounded-md border border-gray-300
-               bg-[#fdfdfd] shadow-inner relative
-               transition-all duration-500 hover:shadow-md"
+        class="h-[550px] w-full rounded-md border border-gray-500
+               bg-[#121212] shadow-inner relative transition-all duration-500"
       >
         <!-- Leaflet map mounts here -->
       </div>
@@ -60,7 +49,7 @@
                  focus:outline-none active:scale-95"
           [ngClass]="{
             'border-[#d84f4f] bg-[#d84f4f] text-white': heatOn,
-            'border-gray-400 bg-[#fff0f0] text-[#d84f4f]': !heatOn
+            'border-gray-400 bg-[#3b3b3b] text-[#d84f4f]': !heatOn
           }"
           (click)="toggleHeatmap()"
         >
@@ -70,7 +59,7 @@
         <!-- Simulate Alert -->
         <button
           class="px-5 py-2 rounded font-semibold border-2 border-green-500
-                 text-green-600 bg-white hover:bg-green-500 hover:text-white
+                 text-green-300 bg-[#2e2e2e] hover:bg-green-500 hover:text-white
                  transition-colors duration-300 focus:outline-none
                  active:scale-95"
           (click)="simulateAlertMarker()"
@@ -81,7 +70,7 @@
         <!-- Fit Bounds -->
         <button
           class="px-5 py-2 rounded font-semibold border-2 border-pink-500
-                 text-pink-600 bg-white hover:bg-pink-500 hover:text-white
+                 text-pink-300 bg-[#2e2e2e] hover:bg-pink-500 hover:text-white
                  transition-colors duration-300 focus:outline-none
                  active:scale-95"
           (click)="fitBounds()"
@@ -89,14 +78,13 @@
           Fit Bounds
         </button>
       </div>
-    </div><!-- ./Map Box -->
+    </div>
 
     <!-- Right Column: Filters + Marker List -->
     <div
-      class="flex flex-col rounded-lg bg-white shadow-md p-5 space-y-5
-             border border-gray-200 hover:shadow-lg
-             border-l-4 border-l-[#d84f4f]
-             transition-shadow duration-300"
+      class="flex flex-col rounded-lg bg-[#2e2e2e] shadow-lg p-5 space-y-5
+             border border-gray-600 hover:shadow-xl
+             border-l-4 border-l-[#d84f4f] transition-shadow duration-300"
     >
       <!-- Filter Alerts -->
       <div class="flex flex-col space-y-4">
@@ -105,11 +93,11 @@
         </h3>
 
         <div class="flex flex-col space-y-2">
-          <label class="text-sm font-medium text-gray-700">Alert Type</label>
+          <label class="text-sm font-medium text-gray-300">Alert Type</label>
           <select
             [(ngModel)]="alertType"
-            class="rounded-md border border-gray-300 bg-white py-2 px-3
-                   text-gray-700 hover:border-[#d84f4f] focus:outline-none
+            class="rounded-md border border-gray-500 bg-[#3b3b3b] py-2 px-3
+                   text-gray-300 hover:border-[#d84f4f] focus:outline-none
                    focus:border-[#d84f4f] transition-colors duration-200
                    text-sm"
           >
@@ -121,21 +109,21 @@
         </div>
 
         <div class="flex flex-col space-y-2">
-          <label class="text-sm font-medium text-gray-700">Date Range</label>
+          <label class="text-sm font-medium text-gray-300">Date Range</label>
           <div class="flex space-x-2">
             <input
               type="date"
               [(ngModel)]="dateFrom"
-              class="flex-1 rounded-md border border-gray-300 bg-white
-                     text-gray-700 py-1 px-2 focus:outline-none
+              class="flex-1 rounded-md border border-gray-500 bg-[#3b3b3b]
+                     text-gray-300 py-1 px-2 focus:outline-none
                      hover:border-[#d84f4f] focus:border-[#d84f4f]
                      transition-colors duration-200 text-sm"
             />
             <input
               type="date"
               [(ngModel)]="dateTo"
-              class="flex-1 rounded-md border border-gray-300 bg-white
-                     text-gray-700 py-1 px-2 focus:outline-none
+              class="flex-1 rounded-md border border-gray-500 bg-[#3b3b3b]
+                     text-gray-300 py-1 px-2 focus:outline-none
                      hover:border-[#d84f4f] focus:border-[#d84f4f]
                      transition-colors duration-200 text-sm"
             />
@@ -143,10 +131,9 @@
         </div>
 
         <button
-          class="rounded-md border border-[#d84f4f] text-[#d84f4f]
-                 bg-white font-medium py-2 hover:bg-[#d84f4f]
-                 hover:text-white transition-colors duration-200
-                 focus:outline-none active:scale-95 text-sm"
+          class="rounded-md border border-[#d84f4f] text-white
+                 bg-[#d84f4f] font-medium py-2 hover:bg-[#b03838]
+                 transition-colors duration-200 focus:outline-none active:scale-95 text-sm"
           (click)="applyFilters()"
         >
           Apply Filters
@@ -162,15 +149,15 @@
           <li
             *ngFor="let m of markers; let i = index"
             class="flex items-center justify-between
-                   bg-[#fefefe] rounded px-3 py-2
-                   hover:bg-[#f7f7f7] transition-colors text-sm
-                   border border-gray-200 text-gray-800"
+                   bg-[#1a1a1a] rounded px-3 py-2
+                   hover:bg-[#2b2b2b] transition-colors text-sm
+                   border border-gray-500 text-gray-300"
           >
             <div>
               <span class="font-semibold text-[#d84f4f]">
                 {{ m.label }}
               </span>
-              <span class="ml-2 text-gray-500">
+              <span class="ml-2 text-gray-400">
                 ({{ m.lat.toFixed(2) }}, {{ m.lng.toFixed(2) }})
               </span>
             </div>
@@ -184,8 +171,11 @@
           </li>
         </ul>
       </div>
-    </div><!-- ./Filter/Marker Box -->
-  </div><!-- ./grid layout -->
+    </div>
+  </div>
 
-  <!-- Footer (optional) -->
-  <footer class="mt-6 text-center text-xs text-[#d84f4f] font-light opacity-80">
+  <!-- Footer -->
+  <footer class="mt-6 text-center text-xs text-gray-400 font-light">
+    Powered by Blackline Horizon
+  </footer>
+</div>
