@@ -1,4 +1,4 @@
-// map.component.spec.ts
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MapComponent } from './map.component';
