@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+
 export interface EventRecord {
   id: number;
   device_event_id: number;
@@ -9,19 +10,21 @@ export interface EventRecord {
   device_date_created: string;
   date_created: string;
   name: string;
-  assigned_user: string;
+  assigned_user?: string;       
   resolution_reason: string;
-  gas_type: string;
+  gas_type?: string;             
   current_status: string;
   user_id: number;
   organization_id: number;
   device_id: number;
   date_acknowledged?: string;
+  acknowledge_user_id?: number;  
   date_resolved?: string;
+  resolve_user_id?: number;     
   date_last_updated?: string;
   uuid?: string;
-  lat: number;
-  lng: number;
+  lat?: number;                   
+  lng?: number;                 
 }
 
 export interface EventType {
@@ -31,6 +34,7 @@ export interface EventType {
   is_visible: number;
   is_high_alert: number;
 }
+
 
 @Injectable({
   providedIn: 'root'

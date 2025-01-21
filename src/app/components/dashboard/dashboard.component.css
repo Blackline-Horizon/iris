@@ -1,4 +1,20 @@
-.dashboard {
-    padding: 16px;
-  }
-  
+/* dashboard.component.css */
+
+/* 让 canvas 充满父容器 */
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* 深色滚动条(仅Chrome) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #444;
+}
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
