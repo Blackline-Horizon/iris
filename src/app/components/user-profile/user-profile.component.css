@@ -1,0 +1,109 @@
+
+:root{
+    --red: #AE142A;
+}
+/* Global styles */
+<<<<<<< HEAD
+
+=======
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1f1f1f;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+>>>>>>> 3feab8df6d4d74309b993685c14e50995b3e1005
+  
+  /* Container styles */
+  .container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  /* Header styles */
+  header {
+    margin-left: 20px;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    margin: 0;
+    color: white;
+  }
+  
+  header h2 {
+    font-size: 3rem;
+    margin: 5px 0;
+    color: white;
+  }
+  
+  /* Settings card styles */
+  .settings-card {
+    background-color: #151515;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    padding: 20px 40px;
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: left;
+  }
+  
+  .settings-card h3 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: white;
+  }
+  
+  /* Form group styles */
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: #bbb;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    /* border: 1px solid #555; */
+    border-radius: 25px;
+    background-color: #1f1f1f;
+    color: #fff;
+    font-size: 1rem;
+    box-shadow: inset 0 0 5px rgba(174, 20, 42, 0.5);
+  }
+  
+  /* Button styles */
+  .change-password-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #AE142A;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s;
+  }
+  
+  .change-password-btn:hover {
+    background-color: #AE142A;
+  }
+  
+
+.user-profile, html {
+    background-color: #292929;
+}
