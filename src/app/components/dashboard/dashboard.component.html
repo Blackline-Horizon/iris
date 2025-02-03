@@ -1,4 +1,24 @@
 <div class="dashboard">
   <h1>Hey {{username}}, welcome to the Dashboard</h1>
   <app-logout-button></app-logout-button>
+
+  <div style="width: 50%; margin: auto;">
+    <h2>Sales Data (Bar Chart)</h2>
+    <ngx-charts-bar-vertical
+      [results]="barChartData"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="true"
+      [showDataLabel]="true"
+      [gradient]="false">
+    </ngx-charts-bar-vertical>
+  
+    <h2>Browser Usage (Pie Chart)</h2>
+    <ngx-charts-pie-chart
+      [results]="pieChartData"
+      [legend]="true"
+      [labels]="true">
+    </ngx-charts-pie-chart>
+  </div>
+
 </div>
