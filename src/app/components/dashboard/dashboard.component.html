@@ -21,9 +21,8 @@
   <div
     class="bg-[#2e2e2e] bg-opacity-90
            rounded-xl p-4 shadow-xl
-           mb-6 flex flex-col md:flex-row items-end gap-4"
+           mb-6 flex flex-col md:flex-row items-center gap-4"
   >
-
     <div class="flex flex-col">
       <label class="text-xs font-semibold text-red-500 uppercase mb-1">
         Date From
@@ -37,7 +36,6 @@
                focus:outline-none focus:border-[#d84f4f]"
       />
     </div>
-
 
     <div class="flex flex-col">
       <label class="text-xs font-semibold text-red-500 uppercase mb-1">
@@ -53,8 +51,8 @@
       />
     </div>
 
-   
-    <div class="flex items-center gap-4 mt-2 md:mt-auto">
+    <!-- Buttons: Apply / Clear -->
+    <div class="flex items-center gap-4 md:mb-0 mt-2 md:mt-auto">
       <button
         (click)="applyTimeFilter()"
         class="rounded-md border border-[#d84f4f] text-white
@@ -96,48 +94,40 @@
       </div>
     </div>
 
-    <div class="col-span-1 lg:col-span-2">
 
-      <div class="bg-[#2e2e2e] bg-opacity-90 rounded-xl p-4 shadow-xl h-full">
+    <div class="col-span-1 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        <div class="grid grid-cols-2 gap-4 auto-rows-[14rem]">
+      <div
+        class="bg-[#2e2e2e] bg-opacity-90
+               rounded-xl p-4 shadow-xl
+               flex flex-col items-center"
+      >
+        <h4 class="text-sm uppercase mb-2 text-gray-300">
+          TOTAL INCIDENTS
+        </h4>
+        <app-donut-chart
+          [count]="totalIncidents"
+          chartLabel="TOTAL"
+        ></app-donut-chart>
+      </div>
 
-          <div
-            class="bg-[#3a3a3a] rounded-lg shadow flex flex-col
-                   items-center justify-center p-4"
-          >
-            <h4 class="text-sm uppercase mb-2 text-gray-300">
-              TOTAL INCIDENTS
-            </h4>
-
-            <div class="w-40 h-40 flex items-center justify-center">
-              <app-donut-chart
-                [count]="totalIncidents"
-                chartLabel="TOTAL"
-              ></app-donut-chart>
-            </div>
-          </div>
-
-
-          <div
-            *ngFor="let cat of incidentCategories"
-            class="bg-[#3a3a3a] rounded-lg shadow flex flex-col
-                   items-center justify-center p-4"
-          >
-            <h4 class="text-sm uppercase mb-2 text-gray-300">
-              {{ cat.label }} INCIDENTS
-            </h4>
-            <div class="w-40 h-40 flex items-center justify-center">
-              <app-donut-chart
-                [count]="cat.count"
-                [chartLabel]="cat.label"
-              ></app-donut-chart>
-            </div>
-          </div>
-        </div>
+      <div
+        *ngFor="let cat of incidentCategories"
+        class="bg-[#2e2e2e] bg-opacity-90
+               rounded-xl p-4 shadow-xl
+               flex flex-col items-center"
+      >
+        <h4 class="text-sm uppercase mb-2 text-gray-300">
+          {{ cat.label }} INCIDENTS
+        </h4>
+        <app-donut-chart
+          [count]="cat.count"
+          [chartLabel]="cat.label"
+        ></app-donut-chart>
       </div>
     </div>
   </div>
+
 
   <div
     class="bg-[#2e2e2e] bg-opacity-90
@@ -150,5 +140,4 @@
       <app-multi-line-chart [events]="filteredEvents"></app-multi-line-chart>
     </div>
   </div>
-
 </div>
