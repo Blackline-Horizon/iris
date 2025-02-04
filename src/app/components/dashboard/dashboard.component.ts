@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';  
 import { StateService } from '../../services/state.service';
 import { MapDataService, EventRecord } from '../map/map-data.service';
 
 import { DashboardMapComponent } from './dashboard-map.component';
-
 import { DonutChartComponent } from './donut-chart.component';
 import { MultiLineChartComponent } from './multi-line-chart.component';
 import { LogoutButtonComponent } from '../../shared/logout-button.component';
@@ -19,6 +19,7 @@ interface IncidentCategory {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,            
     DashboardMapComponent,
     DonutChartComponent,
     MultiLineChartComponent,
@@ -29,9 +30,19 @@ interface IncidentCategory {
 })
 export class DashboardComponent implements OnInit {
   username: string | null = null;
-  events: EventRecord[] = [];
-  totalIncidents = 0;
+
+
+  allEvents: EventRecord[] = [];
+
+  filteredEvents: EventRecord[] = [];
+
+
+  dateFrom: string | null = null;
+  dateTo: string | null = null;
+
+
   incidentCategories: IncidentCategory[] = [];
+  totalIncidents = 0;
 
   constructor(
     private stateService: StateService,
@@ -41,24 +52,54 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.mapDataService.getAllEvents().subscribe({
       next: (res) => {
-        const all = res.events || [];
-        this.events = all;
-        this.totalIncidents = all.length;
-
-        this.computeIncidentCategories();
+        this.allEvents = res.events || [];
+        this.filteredEvents = [...this.allEvents];
+        this.computeAll();
       },
       error: (err) => console.error('Failed to load events:', err)
     });
   }
 
-  private computeIncidentCategories() {
+
+  applyTimeFilter() {
+    if (!this.dateFrom && !this.dateTo) {
+      this.filteredEvents = [...this.allEvents];
+    } else {
+      this.filteredEvents = this.allEvents.filter(e => {
+        const d = new Date(e.date_created).getTime();
+        if (this.dateFrom) {
+          const fromMs = new Date(this.dateFrom).getTime();
+          if (d < fromMs) return false;
+        }
+        if (this.dateTo) {
+          const toMs = new Date(this.dateTo).getTime();
+          if (d > toMs) return false;
+        }
+        return true;
+      });
+    }
+    this.computeAll();
+  }
+
+
+  clearFilter() {
+
+    this.dateFrom = null;
+    this.dateTo = null;
+    this.filteredEvents = [...this.allEvents];
+    this.computeAll();
+  }
+
+
+  private computeAll() {
+    this.totalIncidents = this.filteredEvents.length;
+
     const catMap: Record<string, number> = {};
-
-    for (const e of this.events) {
+    for (const e of this.filteredEvents) {
       let label = '';
-
       if (e.device_event_type_id === 40) {
         label = 'Fall';
       } else if (e.device_event_type_id === 42) {
@@ -77,13 +118,11 @@ export class DashboardComponent implements OnInit {
       catMap[label]++;
     }
 
-    this.incidentCategories = Object.keys(catMap).map(k => ({
+    const arr = Object.keys(catMap).map(k => ({
       label: k,
       count: catMap[k]
     }));
-
-    this.incidentCategories.sort((a, b) =>
-      a.label.localeCompare(b.label)
-    );
+    arr.sort((a, b) => a.label.localeCompare(b.label));
+    this.incidentCategories = arr;
   }
 }
