@@ -1,4 +1,90 @@
-<div class="dashboard">
-  <h1>Hey {{username}}, welcome to the Dashboard</h1>
-  <app-logout-button></app-logout-button>
+<div
+  class="dashboard-container min-h-screen text-white
+         bg-gradient-to-b from-[#1a1a1a] to-[#2b2b2b]
+         pt-6 pb-10 pr-6 pl-72
+">
+  <!-- Top: welcome + logout -->
+  <div class="mb-6">
+    <div
+      class="bg-[#2e2e2e] bg-opacity-90
+             rounded-xl p-4 shadow-xl
+             flex items-center justify-between"
+    >
+      <h2 class="text-3xl font-extrabold tracking-wide">
+        Welcome Back, <span class="text-red-500">{{ username }}</span>
+      </h2>
+      <app-logout-button></app-logout-button>
+    </div>
+  </div>
+
+  <!-- Middle: map + cards -->
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+    <!-- Map on left -->
+    <div
+      class="col-span-1 lg:col-span-3
+             bg-[#2e2e2e] bg-opacity-90
+             rounded-xl p-4 shadow-xl flex flex-col"
+    >
+      <h3 class="text-xl font-semibold mb-3 text-gray-100">
+        Global Incidents
+      </h3>
+      <!-- Keep a fixed or flexible height for the map -->
+      <div class="w-full h-[450px]">
+        <app-dashboard-map
+          [events]="events"
+          class="w-full h-full block"
+        ></app-dashboard-map>
+      </div>
+    </div>
+
+    <!-- Right: donut cards (Total, then each category) -->
+    <div
+      class="col-span-1 lg:col-span-2
+             grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <!-- Card: total incidents -->
+      <div
+        class="bg-[#2e2e2e] bg-opacity-90
+               rounded-xl p-4 shadow-xl
+               flex flex-col items-center"
+      >
+        <h4 class="text-sm uppercase mb-2 text-gray-300">
+          TOTAL INCIDENTS
+        </h4>
+        <app-donut-chart
+          [count]="totalIncidents"
+          chartLabel="TOTAL"
+        ></app-donut-chart>
+      </div>
+
+      <!-- Card: each category (Fall, CO, H2S...) -->
+      <div
+        *ngFor="let cat of incidentCategories"
+        class="bg-[#2e2e2e] bg-opacity-90
+               rounded-xl p-4 shadow-xl
+               flex flex-col items-center"
+      >
+        <h4 class="text-sm uppercase mb-2 text-gray-300">
+          {{ cat.label }} INCIDENTS
+        </h4>
+        <app-donut-chart
+          [count]="cat.count"
+          [chartLabel]="cat.label"
+        ></app-donut-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: multi-line chart -->
+  <div
+    class="bg-[#2e2e2e] bg-opacity-90
+           rounded-xl p-4 shadow-xl"
+  >
+    <h3 class="text-xl font-semibold mb-3 text-gray-100">
+      Historical Incidents
+    </h3>
+    <div class="relative w-full h-80">
+      <app-multi-line-chart [events]="events"></app-multi-line-chart>
+    </div>
+  </div>
 </div>
