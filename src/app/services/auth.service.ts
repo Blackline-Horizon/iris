@@ -36,6 +36,14 @@ export class AuthService {
         Name: 'name',
         Value: `${firstName} ${lastName}`,
       }),
+      new CognitoUserAttribute({
+        Name: 'given_name',
+        Value: `${firstName}`,
+      }),
+      new CognitoUserAttribute({
+        Name: 'family_name',
+        Value: `${lastName}`,
+      }),
     ];
 
     return new Promise((resolve, reject) => {
@@ -76,7 +84,10 @@ export class AuthService {
             } else {
               // Ensure `attributes` is an array (it should be, but we handle any edge case)
               const userAttributes: CognitoUserAttribute[] = attributes || [];
-
+              const email = this.getAttributeValue(
+                userAttributes,
+                'email'
+              )
               // Extract firstName, lastName, and JWT token
               const firstName = this.getAttributeValue(
                 userAttributes,
@@ -86,12 +97,15 @@ export class AuthService {
                 userAttributes,
                 'family_name'
               );
+              const uuid = this.getAttributeValue(userAttributes, 'sub')
               const jwtToken = result.getIdToken().getJwtToken();
 
               this.stateService.setState('isAuthenticated', true);
               this.stateService.setState('username', username);
               this.stateService.setState('firstName', firstName);
               this.stateService.setState('lastName', lastName);
+              this.stateService.setState('email', email);
+              this.stateService.setState('uuid', uuid);
               this.stateService.setState('jwtToken', jwtToken);
 
               this.router.navigate(['/dashboard']);

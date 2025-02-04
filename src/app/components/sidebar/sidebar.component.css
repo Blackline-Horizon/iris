@@ -1,0 +1,64 @@
+
+.active {
+  background-color: #ae142a;
+}
+
+.active i {
+  color: white;
+}
+
+.translate-x-full {
+  transform: translateX(100%);
+}
+
+
+ul {
+  padding: 0;
+  list-style-type: none;
+}
+
+a {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  background-color: #ae142a;
+  transition: background-color 0.3s ease;
+}
+
+a.router-link-active {
+  background-color: #ae142a;
+}
+
+a i {
+  color: #ae142a;
+  margin-right: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+a:hover i {
+  color: white;
+}
+
+
+nav .text-center p {
+  margin: 0;
+  line-height: 1.2;
+}
+
+nav .text-red-600 {
+  color: #ae142a;
+}
+
+.space-y-4 li {
+  margin-bottom: 1rem; 
+}
