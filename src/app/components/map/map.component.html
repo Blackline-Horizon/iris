@@ -1,1 +1,234 @@
-<p>map works!</p>
+<div
+  class="min-h-screen w-full
+         bg-gradient-to-b from-[#1a1a1a] to-[#2b2b2b]
+         text-white flex flex-col items-center
+         pt-8 pb-12 pl-64"
+>
+  <h1 class="text-4xl font-extrabold tracking-wider mb-4">
+    Interactive Map
+  </h1>
+
+  <div class="w-full max-w-6xl px-4 mb-6">
+    <div class="bg-[#2e2e2e] bg-opacity-80 rounded-md p-4 flex flex-col gap-6">
+      <div class="flex flex-col xl:flex-row gap-6 justify-between">
+        <div class="flex flex-col gap-4">
+          <div>
+            <!-- 1. Incident Types (Multiple selections allowed) -->
+            <span class="text-xs font-semibold text-red-500 uppercase mb-2 inline-block">
+              Incident Types (Multiple selections allowed)
+            </span>
+            <div
+              class="flex flex-nowrap items-center gap-4
+                    whitespace-nowrap overflow-x-auto"
+            >
+              <ng-container *ngFor="let type of incidentTypeOptions">
+                <label class="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    [checked]="selectedTypeIds.includes(type.id)"
+                    (change)="toggleIncidentType(type.id)"
+                    class="accent-[#d84f4f] w-4 h-4"
+                  />
+                  <span class="text-gray-200 font-medium text-sm">
+                    {{ type.label }}
+                  </span>
+                </label>
+              </ng-container>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <!-- 2. Status (Multiple selections allowed) -->
+            <span class="text-xs font-semibold text-red-500 uppercase">
+              Status (Multiple selections allowed)
+            </span>
+            <div class="flex flex-wrap items-center gap-2">
+              <label
+                *ngFor="let s of statusOptions"
+                class="flex items-center space-x-2"
+              >
+                <input
+                  type="checkbox"
+                  [checked]="selectedStatus.includes(s)"
+                  (change)="toggleStatus(s)"
+                  class="accent-[#d84f4f] w-4 h-4"
+                />
+                <span class="text-gray-200 font-medium text-sm">
+                  {{ s }}
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col">
+          <div class="flex items-center justify-between mb-1">
+            <!-- 3. Gas Types -->
+            <span class="text-xs font-semibold text-red-500 uppercase">
+              Gas Types
+            </span>
+            <button
+              class="px-2 py-1 text-xs font-semibold rounded-md
+                     border border-blue-400 text-blue-400
+                     hover:text-white hover:bg-blue-400
+                     transition-colors duration-150
+                     focus:outline-none active:scale-95"
+              (click)="toggleSelectAllGas()"
+            >
+              Toggle Select All
+            </button>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <label
+              *ngFor="let g of allGasTypes"
+              class="flex items-center space-x-1 text-sm
+                     cursor-pointer select-none"
+            >
+              <input
+                type="checkbox"
+                [(ngModel)]="selectedGasTypes[g]"
+                class="accent-[#d84f4f] w-4 h-4"
+              />
+              <span class="text-gray-200">{{ g }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
+        <div class="flex flex-wrap items-end gap-4">
+          <div class="flex flex-col">
+            <!-- 4. Date From -->
+            <label class="text-xs font-semibold text-red-500 uppercase mb-1">
+              Date From
+            </label>
+            <div class="relative">
+              <span
+                class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
+              >
+                <svg
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span>
+              <input
+                type="date"
+                [(ngModel)]="dateFrom"
+                class="rounded-md border border-gray-400
+                       bg-[#f2f2f2] text-[#1a1a1a]
+                       py-2 pr-3 pl-8 text-sm w-40
+                       focus:outline-none focus:border-[#d84f4f]
+                       transition-colors duration-200"
+              />
+            </div>
+          </div>
+
+          <div class="flex flex-col">
+            <!-- 5. Date To -->
+            <label class="text-xs font-semibold text-red-500 uppercase mb-1">
+              Date To
+            </label>
+            <div class="relative">
+              <span
+                class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
+              >
+                <svg
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span>
+              <input
+                type="date"
+                [(ngModel)]="dateTo"
+                class="rounded-md border border-gray-400
+                       bg-[#f2f2f2] text-[#1a1a1a]
+                       py-2 pr-3 pl-8 text-sm w-40
+                       focus:outline-none focus:border-[#d84f4f]
+                       transition-colors duration-200"
+              />
+            </div>
+          </div>
+
+          <div class="flex flex-col">
+            <!-- 6. Assigned User -->
+            <label class="text-xs font-semibold text-red-500 uppercase mb-1">
+              Assigned User
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="assignedUserSearch"
+              class="rounded-md border border-gray-400
+                     bg-[#f2f2f2] text-[#1a1a1a]
+                     py-2 px-3 text-sm w-40
+                     focus:outline-none focus:border-[#d84f4f]"
+            />
+          </div>
+
+          <div class="flex flex-col">
+            <!-- 7. Device ID -->
+            <label class="text-xs font-semibold text-red-500 uppercase mb-1">
+              Device ID
+            </label>
+            <input
+              type="number"
+              [(ngModel)]="deviceIdSearch"
+              class="rounded-md border border-gray-400
+                     bg-[#f2f2f2] text-[#1a1a1a]
+                     py-2 px-3 text-sm w-40
+                     focus:outline-none focus:border-[#d84f4f]"
+            />
+          </div>
+        </div>
+
+        <div class="self-end">
+          <button
+            class="rounded-md border border-[#d84f4f] text-white
+                   bg-[#d84f4f] font-semibold py-2 px-6
+                   hover:bg-[#b03838] transition-colors duration-200
+                   focus:outline-none active:scale-95 text-sm"
+            (click)="applyFilters()"
+          >
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="leaflet-map"
+    class="w-full max-w-6xl
+           h-[550px]
+           rounded-md overflow-hidden
+           border border-gray-700
+           flex-shrink-0"
+    style="filter: grayscale(1) brightness(1.1);"
+  ></div>
+
+  <div class="mt-8 text-center">
+    <div class="text-sm text-gray-300 mb-1">Total Incidents</div>
+    <div class="text-5xl font-extrabold text-[#d84f4f]">
+      {{ filteredRecords.length }}
+    </div>
+  </div>
+</div>

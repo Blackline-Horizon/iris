@@ -1,0 +1,23 @@
+.dashboard-container {
+  /* left padding for navbar, if needed */
+}
+
+.dashboard-container h2,
+.dashboard-container h3,
+.dashboard-container h4 {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.shadow-xl {
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+}
+
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #1a1a1a;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 4px;
+}

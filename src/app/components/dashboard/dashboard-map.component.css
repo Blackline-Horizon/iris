@@ -1,0 +1,11 @@
+.dashboard-map-container {
+    border-radius: 0.5rem;
+    border: 1px solid #444;
+    background-color: #2b2b2b;
+  }
+  
+  /* Leaflet container background */
+  .leaflet-container {
+    background-color: #2b2b2b;
+  }
+  

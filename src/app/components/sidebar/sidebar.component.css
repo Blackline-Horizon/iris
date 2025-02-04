@@ -1,7 +1,3 @@
-nav {
-  background-color: #000000;
-  transition: transform 0.3s ease-in-out;
-}
 
 .active {
   background-color: #ae142a;
@@ -15,21 +11,6 @@ nav {
   transform: translateX(100%);
 }
 
-@media (max-width: 767px) {
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 999;
-    background-color: rgba(0, 0, 0, 1);
-  }
-
-  .md:hidden {
-    display: block;
-  }
-}
 
 ul {
   padding: 0;
@@ -68,49 +49,16 @@ a:hover i {
   color: white;
 }
 
-.font-body {
-  font-family: "Roboto", sans-serif;
-  font-weight: 100;
-}
 
 nav .text-center p {
   margin: 0;
   line-height: 1.2;
 }
 
-nav .text-white {
-  color: white;
-}
-
 nav .text-red-600 {
   color: #ae142a;
 }
 
-nav ul + ul {
-  margin-top: 16px;
-}
-
-nav ul {
-  margin-bottom: 16px;
-}
-
-nav .space-y-4 li {
-  margin-bottom: 16px;
-}
-
-nav .mt-auto {
-  margin-top: auto;
-}
-
-nav.translate-x-0 {
-  transform: translateX(0);
-}
-
-@media (max-width: 767px) {
-  nav {
-    background-color: rgba(0, 0, 0, 1);
-  }
-  nav .mt-auto {
-    margin-top: auto;
-  }
+.space-y-4 li {
+  margin-bottom: 1rem; 
 }

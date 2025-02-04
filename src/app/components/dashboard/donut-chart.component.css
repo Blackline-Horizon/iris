@@ -1,0 +1,10 @@
+.donut-chart-wrapper {
+    position: relative;
+  }
+  
+  .donut-chart-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+  }
+  

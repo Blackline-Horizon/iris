@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environments.local';
+import { environment } from '../../environment/environment.local';
 import {
   CognitoUserPool,
   CognitoUser,

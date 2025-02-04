@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { environment } from '../../../environments/environments.local';
+import { environment } from '../../../environment/environment.local';
 
 interface ServiceUrls {
   ATHENA: string;
