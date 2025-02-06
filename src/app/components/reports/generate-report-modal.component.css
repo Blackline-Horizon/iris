@@ -1,0 +1,29 @@
+.custom-backdrop {
+    background-color: rgba(0, 0, 0, 0.5); /* Darker backdrop */
+    color: blue;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    height: 100vh;
+  }
+
+.generate-report-modal {
+    height: 100px;
+
+}
+
+.reports {
+    background-color: #292929;
+}
+
+
+
+.form-group input, .select-group {
+    width: 100%;
+    padding: 10px;
+    /* border: 1px solid #555; */
+    border-radius: 25px;
+    background-color: #1f1f1f;
+    color: #fff;
+    font-size: 1rem;
+    box-shadow: inset 0 0 5px rgba(174, 20, 42, 0.5);
+    overflow: hidden;
+  }

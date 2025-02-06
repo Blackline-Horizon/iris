@@ -3,9 +3,6 @@
     --red: #AE142A;
 }
 /* Global styles */
-<<<<<<< HEAD
-
-=======
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -16,7 +13,6 @@ body {
     align-items: center;
     height: 100vh;
   }
->>>>>>> 3feab8df6d4d74309b993685c14e50995b3e1005
   
   /* Container styles */
   .container {
