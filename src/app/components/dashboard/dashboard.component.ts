@@ -58,6 +58,7 @@ export class DashboardComponent implements OnInit {
         this.allEvents = res.events || [];
         this.filteredEvents = [...this.allEvents];
         this.computeAll();
+        console.log("recieved events:", res)
       },
       error: (err) => console.error('Failed to load events:', err)
     });

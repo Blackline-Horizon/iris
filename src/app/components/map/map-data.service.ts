@@ -40,7 +40,8 @@ export interface EventType {
   providedIn: 'root'
 })
 export class MapDataService {
-  private jsonUrl = 'assets/data/map-data.json';
+  private jsonUrl = "http://127.0.0.1:3001/events"
+  // private jsonUrl = 'assets/data/map-data.json';
 
   constructor(private http: HttpClient) {}
 
