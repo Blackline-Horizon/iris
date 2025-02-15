@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';  
 import { StateService } from '../../services/state.service';
-import { MapDataService, EventRecord } from '../map/map-data.service';
+import { DashboardDataService, EventRecord } from './dashboard-data.service';
 
-import { DashboardMapComponent } from './dashboard-map.component';
-import { DonutChartComponent } from './donut-chart.component';
-import { MultiLineChartComponent } from './multi-line-chart.component';
+import { DashboardMapComponent } from './dashboard-map/dashboard-map.component';
+import { DonutChartComponent } from './donut-chart/donut-chart.component';
+import { MultiLineChartComponent } from './multi-line-chart/multi-line-chart.component';
 import { LogoutButtonComponent } from '../../shared/logout-button.component';
 
 interface IncidentCategory {
@@ -46,14 +46,14 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private stateService: StateService,
-    private mapDataService: MapDataService
+    private dashboardDataService: DashboardDataService
   ) {
     this.username = this.stateService.getState('username');
   }
 
   ngOnInit(): void {
 
-    this.mapDataService.getAllEvents().subscribe({
+    this.dashboardDataService.getAllEvents().subscribe({
       next: (res) => {
         this.allEvents = res.events || [];
         this.filteredEvents = [...this.allEvents];

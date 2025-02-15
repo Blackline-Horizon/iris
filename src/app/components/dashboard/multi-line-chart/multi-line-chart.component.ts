@@ -8,7 +8,7 @@ import {
     SimpleChanges
   } from '@angular/core';
   import { Chart } from 'chart.js/auto';
-  import { EventRecord } from '../map/map-data.service';
+  import { EventRecord } from '../dashboard-data.service';
   
   @Component({
     selector: 'app-multi-line-chart',
