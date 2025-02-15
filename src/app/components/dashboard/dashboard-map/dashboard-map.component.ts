@@ -11,7 +11,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import * as L from 'leaflet';
-import { EventRecord } from '../../map/map-data.service';
+import { EventRecord } from '../dashboard-data.service';
 
 @Component({
   selector: 'app-dashboard-map',
