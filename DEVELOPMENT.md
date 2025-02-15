@@ -1,6 +1,11 @@
 # Deploying to EC2
 
 First step, Cd into Iris
+Then restore changes
+```console
+git restore . 
+```
+
 ```console
 git pull
 ```

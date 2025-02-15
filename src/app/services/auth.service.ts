@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environment/environment.local';
+import { environment } from '../../environments/environments.local';
 import {
   CognitoUserPool,
   CognitoUser,
@@ -55,6 +55,7 @@ export class AuthService {
         (err, result) => {
           if (err) {
             reject(err);
+            console.log(err);
           } else {
             resolve(result);
           }
@@ -81,6 +82,7 @@ export class AuthService {
           cognitoUser.getUserAttributes((err, attributes) => {
             if (err) {
               reject(err);
+              console.log(err);
             } else {
               // Ensure `attributes` is an array (it should be, but we handle any edge case)
               const userAttributes: CognitoUserAttribute[] = attributes || [];
