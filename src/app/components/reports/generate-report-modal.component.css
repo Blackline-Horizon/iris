@@ -14,8 +14,6 @@
     background-color: #292929;
 }
 
-
-
 .form-group input, .select-group {
     width: 100%;
     padding: 10px;
@@ -25,5 +23,56 @@
     color: #fff;
     font-size: 1rem;
     box-shadow: inset 0 0 5px rgba(174, 20, 42, 0.5);
-    overflow: hidden;
+    /* overflow: hidden; */
   }
+
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: #292929;
+    padding: 30px;
+    border-radius: 10px;
+    border-color: #ae142a;
+    border-width: 1px;
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+
+.bg-red-horizon {
+  background-color: #AE142A;
+} 
+
+.parent{
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.child{
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.child::-webkit-scrollbar {
+  width: 0; /* Hide the scrollbar width */
+  background: transparent; /* Optional: Make the background transparent */
+}
+
+/* Inverts the color of the calendar icon from black to white */
+input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

@@ -1,5 +1,5 @@
-<div class="reports p-4 h-full pl-72">
-    <h1 class="text-2xl font-bold text-red-horizon pb-2">Previous Reports</h1>
+<div class="reports h-full min-h-screen md:pl-64 pb-16">
+    <h1 class="text-2xl font-bold text-red-horizon pb-2 pl-2">Previous Reports</h1>
     <div class="mb-6">  
         <div class="bg-[#2e2e2e] bg-opacity-90
                  rounded-xl p-4 shadow-xl
@@ -10,15 +10,14 @@
                     class="flex justify-between items-center p-2 border border-gray-300 rounded w-full">
                     <div>
                         <strong>
-                            {{ report.name }}</strong> (
-                        {{ report.date }}) by
-                        {{ report.author }}
+                            {{ report.title }}</strong> ({{ report.created_at }}) Industry: 
+                        {{ report.industry }}
                     </div>
                     <div>
                         <button (click)="deleteReport(report.id)" class="text-red-600 hover:underline">
                             Delete
                         </button>
-                        <button (click)="openPdf(report.id)" class="text-blue-600 hover:underline ml-2">
+                        <button (click)="openPdf(report.pdf_id)" class="text-blue-600 hover:underline ml-2">
                             View PDF
                         </button>
                     </div>
@@ -32,9 +31,10 @@
                  rounded-xl p-4 shadow-xl
                 items-center justify-between">
             
-            <button class="flex w-full bg-red-horizon justify-center text-white p-2 rounded" (click)="openGenerateReportMenu()" >
+            <button class="flex w-full bg-red-horizon justify-center text-white p-2 rounded" (click)="showModal()" >
                 Create Report
             </button>
+            <app-generate-report-modal *ngIf="isModalVisible" [industries]="industries" [alerts]="alerts" (close)="hideModal()"></app-generate-report-modal>
         </div>
     </div>
 

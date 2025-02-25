@@ -1,0 +1,33 @@
+{
+    "sensorTypes": [
+      "H2S",
+      "O2",
+      "LEL",
+      "PID",
+      "CO",
+      "CO2",
+      "H2",
+      "NH3",
+      "LEL-MPS",
+      "Cl2",
+      "HCN",
+      "HF",
+      "SO2",
+      "NO2",
+      "ClO2",
+      "O3",
+      "Gamma"
+  ],
+  "industries": [
+    "Fire and Hazmat",
+    "Oil and Gas",
+    "Water and Wastewater",
+    "Utilities",
+    "Hydrogen Operations",
+    "Petrochemical",
+    "Renewable Energy",
+    "Biotech and Pharma",
+    "Steel Manufacturing",
+    "Transportation and Logistics"
+  ]
+}

@@ -1,32 +1,84 @@
-import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogActions, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-
-
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Output,Input } from '@angular/core';
+import { ApiService } from '../../services/api.service';
+import { StateService } from '../../services/state.service';
 @Component({
   selector: 'app-generate-report-modal',
   standalone: true,
-  imports: [MatButtonModule, MatDialogModule, MatFormFieldModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './generate-report-modal.component.html',
   styleUrl: './generate-report-modal.component.css'
 })
 export class GenerateReportModalComponent {
-  constructor(private dialogRef: MatDialogRef<GenerateReportModalComponent>, @Inject(MAT_DIALOG_DATA) public newReport: any) {}
+  @Input() industries: string[] = []; // Receive the industries array
+  @Input() alerts: string[] = [];
+  
+  @Output() close = new EventEmitter<void>();
+  constructor(private apiService: ApiService, private stateService: StateService){}
 
-  close(): void {
-    this.dialogRef.close();
+  newReport: any = {
+    username: "",
+    title:"",
+    created_at:"", 
+    industry:"",
+    location:"", 
+    alerts:[]
   }
 
-  onNoClick(): void {
-    this.close();
+  closeModal(): void {
+    this.close.emit();
+  }
+
+  ngOnInit(): void{
+    this.newReport['username'] = this.stateService.getState("username");
+  }
+
+  hasNonEmptyValues(obj: Record<string, any>): boolean {
+    // Check if the input is an object
+    if (typeof obj !== 'object' || obj === null) {
+        return false; // Not a valid object
+    }
+
+    // Iterate over each key in the object
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            const value = obj[key];
+            // Check if the value is an empty string, null, or undefined
+            if (value === '' || value === null || value === undefined) {
+                return false; // Found an empty field
+            }
+        }
+    }
+    return true;
+  }
+
+  // Method to handle checkbox change
+  onCheckboxChange(alert: string, event: Event) {
+    const isChecked = (event.target as HTMLInputElement).checked; // Cast to HTMLInputElement
+    if (isChecked) {
+      // If checked, add the alert to the array
+      this.newReport.alerts.push(alert);
+    } else {
+      // If unchecked, remove the alert from the array
+      const index = this.newReport.alerts.indexOf(alert);
+      if (index > -1) {
+        this.newReport.alerts.splice(index, 1);
+      }
+    }
   }
 
   createReport(): void {
-    if (this.newReport.createReport) {
-      this.newReport.createReport(); // Call the method from the parent
+    console.log(this.newReport);
+    if (!this.hasNonEmptyValues(this.newReport)){
+      alert("Please populate all fields");
+      return;
     }
+    this.apiService.postHermes("report", this.newReport)
+      .catch(err=>{
+        throw err;
+      })
+    this.closeModal()
   }
 
 }
