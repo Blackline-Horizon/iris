@@ -1,0 +1,334 @@
+/* Main Filters Container */
+.filters-container {
+    background-color: rgba(24, 24, 24, 0.95);
+    border-radius: 8px;
+    padding: 1rem;
+    width: 100%;
+  }
+  
+  /* Compact Mode Styling */
+  .compact-mode {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+  
+  .compact-mode .filter-header h3 {
+    font-size: 0.9rem;
+  }
+  
+  .compact-mode .filter-content {
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  
+  .compact-mode .filter-options-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  
+  .compact-mode .filter-actions {
+    padding-top: 0.75rem;
+  }
+  
+  /* Filter Categories */
+  .filter-categories {
+    margin-bottom: 1rem;
+  }
+  
+  /* Filter Group */
+  .filter-group {
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.75rem;
+  }
+  
+  .filter-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-header:hover h3 {
+    color: #3498db;
+  }
+  
+  .filter-header h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #f0f0f0;
+    transition: color 0.2s ease;
+  }
+  
+  .filter-options {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .filter-header i {
+    color: #3498db;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .select-all-btn {
+    background: none;
+    border: none;
+    color: #bbb;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s ease;
+  }
+  
+  .select-all-btn:hover {
+    color: #3498db;
+    text-decoration: underline;
+  }
+  
+  /* Filter Content - Accordion Style */
+  .filter-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 0.5rem;
+  }
+  
+  .filter-content.open {
+    max-height: 300px;
+    padding: 0.5rem;
+  }
+  
+  .filter-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.5rem;
+  }
+  
+  /* Checkbox Container */
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 24px;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 0.35rem;
+  }
+  
+  .checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  
+  .checkmark {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    background-color: #2d2d2d;
+    border: 1px solid rgba(52, 152, 219, 0.4);
+    border-radius: 3px;
+    transition: all 0.2s ease;
+  }
+  
+  .checkbox-container:hover .checkmark {
+    border-color: #3498db;
+  }
+  
+  .checkbox-container input:checked ~ .checkmark {
+    background-color: #3498db;
+    border-color: #3498db;
+  }
+  
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  .checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+  }
+  
+  .checkbox-container .checkmark:after {
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  
+  .label-text {
+    color: #bbb;
+    transition: color 0.2s ease;
+    font-size: 0.85rem;
+  }
+  
+  .checkbox-container:hover .label-text {
+    color: #f0f0f0;
+  }
+  
+  .checkbox-container input:checked ~ .label-text {
+    color: #f0f0f0;
+  }
+  
+  /* Regions & Countries Sections */
+  .regions-section {
+    margin-bottom: 1rem;
+  }
+  
+  .regions-section h4,
+  .countries-section h4 {
+    font-size: 0.85rem;
+    color: #ddd;
+    margin: 0 0 0.75rem 0;
+    font-weight: 500;
+  }
+  
+  .countries-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Date Range Picker */
+  .date-range-picker {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .date-input {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .date-input label {
+    font-size: 0.8rem;
+    color: #bbb;
+    margin-bottom: 0.5rem;
+  }
+  
+  .date-input input {
+    background-color: #2d2d2d;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+    color: #f0f0f0;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+  }
+  
+  .date-input input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+  }
+  
+  /* Filter Actions */
+  .filter-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .apply-btn, .reset-btn {
+    border: none;
+    border-radius: 4px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .apply-btn {
+    background-color: #3498db;
+    color: white;
+    flex: 2;
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+  }
+  
+  .apply-btn:hover {
+    background-color: #217dbb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+  }
+  
+  .reset-btn {
+    background-color: transparent;
+    color: #bbb;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex: 1;
+  }
+  
+  .reset-btn:hover {
+    color: #f0f0f0;
+    border-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .apply-btn:active, .reset-btn:active {
+    transform: translateY(1px);
+  }
+  
+  /* Custom scrollbar */
+  .filter-content.open::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .filter-content.open::-webkit-scrollbar-track {
+    background: #2d2d2d;
+    border-radius: 3px;
+  }
+  
+  .filter-content.open::-webkit-scrollbar-thumb {
+    background: #3498db;
+    border-radius: 3px;
+  }
+  
+  .filter-content.open::-webkit-scrollbar-thumb:hover {
+    background: #217dbb;
+  }
+  
+  /* Media Queries */
+  @media (max-width: 992px) {
+    .filter-options-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .date-range-picker {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .compact-mode .filter-content.open {
+      max-height: 250px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .filter-options-grid {
+      grid-template-columns: 1fr;
+    }
+  }
