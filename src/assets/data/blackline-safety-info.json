@@ -16,7 +16,8 @@
       "NO2",
       "ClO2",
       "O3",
-      "Gamma"
+      "Gamma",
+      "None"
   ],
   "industries": [
     "Fire and Hazmat",
@@ -29,5 +30,60 @@
     "Biotech and Pharma",
     "Steel Manufacturing",
     "Transportation and Logistics"
+  ],
+  "deviceTypes": [
+    "Loner 900",
+    "Loner G7x",
+    "Bridge",
+    "Loner G7l",
+    "Loner Smd",
+    "Loner Atex",
+    "Loner G7r",
+    "Loner G7u",
+    "Exo",
+    "Loner M7",
+    "Loner Mobile",
+    "Exo Mk2",
+    "Exo8 Gamma",
+    "Exo Refresh",
+    "Loner G7p",
+    "Loner Is",
+    "Bridge G7",
+    "Bridge Lte",
+    "Bridge Refresh",
+    "Loner M6i"
+  ],
+  "resolutionTypes":[
+    "Auto Resolved By System",
+    "Auto Resolved By Move",
+    "Incident Without Dispatch",
+    "False Alert Without Dispatch",
+    "Incident With Dispatch",
+    "False Alert With Dispatch"
+  ], 
+  "eventTypes":[
+    "Emergency Alert",
+    "Gas Alert Detected",
+    "Bridge Message Alert",
+    "Over Limit Gas Alert Detected",
+    "Stel Alert Detected",
+    "Silent Alert",
+    "Missed Check In",
+    "Twa Alert Detected",
+    "No Motion Occurred",
+    "Fall Detected Alert",
+    "Logon",
+    "Server Generated Noisy Alert",
+    "Low Battery",
+    "Network Timeout",
+    "Logoff",
+    "Server Generated Silent Alert",
+    "Pump Block Detected",
+    "Device Tipped Over"
+  ],
+  "continents":[
+    "North America",
+    "Europe", 
+    "Other"
   ]
 }

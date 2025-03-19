@@ -7,17 +7,6 @@ import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
 import blacklineSafetyInfoJSON from '../../../assets/data/blackline-safety-info.json'
 
-interface Report {
-  id: number;
-  name: string;
-  date: string;
-  author: string;
-  region: string;
-  industry: string;
-  location: string;
-  alerts: string[];
-}
-
 @Component({
   selector: 'app-reports',
   standalone: true,
@@ -27,10 +16,14 @@ interface Report {
 })
 export class ReportsComponent implements OnInit {
   reports: any[]= [];
-  newReport: Omit<Report, 'id'> = { name: '', date: '', author: '', region: '', industry:'', location:'', alerts: [] };
+  newReport: any = { id: 0, name: '', start_date: '', end_date: '', region: '', industry:'', location:'', alerts: [] };
   isModalVisible=false;
   industries: string[] = blacklineSafetyInfoJSON.industries;
   alerts: string[] = blacklineSafetyInfoJSON.sensorTypes;
+  devices: string[] = blacklineSafetyInfoJSON.deviceTypes;
+  resolutions: string[] = blacklineSafetyInfoJSON.resolutionTypes;
+  events: string[] = blacklineSafetyInfoJSON.eventTypes;
+  continents: string[] = blacklineSafetyInfoJSON.continents;
   
   constructor(private apiService: ApiService, private stateService: StateService) {}
 
@@ -57,13 +50,19 @@ export class ReportsComponent implements OnInit {
     }
 
   deleteReport(id: number): void {
-    this.reports = this.reports.filter(report => report.id !== id);
+    let params = {report_id:id};
+    this.apiService.deleteHermes("report", params).then(response=>{
+      window.location.reload();
+    })
   }
 
-  openPdf(reportId: number): void {
-    console.log(reportId);
-    const pdfUrl = `../assets/sample-report${reportId}.pdf`; // Path to your PDF file
-    window.open(pdfUrl, '_blank'); // Open PDF in a new tab
+  openPdf(pdfId: number): void {
+    let params = {pdf_id:pdfId};
+    this.apiService.getHermes("pdf_report", params).then(response=>{
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(blob);
+      window.open(pdfUrl, '_blank');  // Opens in new tab
+    })
   }
 
 }

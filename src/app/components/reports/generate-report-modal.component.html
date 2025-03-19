@@ -1,13 +1,25 @@
 <div class="modal-overlay pl-64 md:pl-64 pb-16" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-content overflow-y-auto max-h-[80vh] bg-gray-800 p-4 rounded" (click)="$event.stopPropagation()">
         <h2 class="text-xl font-semibold text-white">Create New Report</h2>
         <form (ngSubmit)="createReport()" class="form-group flex flex-col space-y-3 mt-2">
-            <input type="text" [(ngModel)]="newReport.title" name="name" placeholder="Report Name"
+            <h2 class="text-white">Report Name</h2>
+            <input type="text" [(ngModel)]="newReport.title" name="name"
                 class="p-2 border border-gray-300 rounded" required />
-            <input type="date" [(ngModel)]="newReport.created_at" name="date" class="p-2 border border-gray-300 rounded"
+            <h2 class="text-white">Start Date</h2>
+            <input type="date" default="Start Date" [(ngModel)]="newReport.date_start" name="start_date" class="p-2 border border-gray-300 rounded"
                 required />
-            <input type="text" [(ngModel)]="newReport.location" name="location" placeholder="Location"
-                class="p-2 border border-gray-300 rounded" required />
+            <h2 class="text-white">End Date</h2>
+            <input type="date" [(ngModel)]="newReport.date_end" name="end_date" class="p-2 border border-gray-300 rounded"
+                required />
+            <h2 class="text-white">Continents</h2>
+            <div class="flex flex-wrap items-center justify-center gap-4 whitespace-nowrap overflow-x-auto">
+                <ng-container *ngFor="let type of continents">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" (change)="onCheckboxChange('continents',type, $event)" class="accent-[#d84f4f] w-4 h-4" />
+                        <span class="text-gray-200 font-medium text-sm">{{ type }}</span>
+                    </label>
+                </ng-container>
+            </div>
             <!-- Dropdown for Industry Selection -->
             <select name="industry" [(ngModel)]="newReport.industry"
                 class="select-group p-2 border border-gray-300 rounded" required>
@@ -17,33 +29,50 @@
                 </option>
             </select>
 
-            <div
-              class="flex flex-wrap items-center justify-center gap-4
-                    whitespace-nowrap overflow-x-auto"
-            >
-            <ng-container *ngFor="let type of alerts">
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    (change)="onCheckboxChange(type, $event)"
-                    class="accent-[#d84f4f] w-4 h-4"
-                    
-                  />
-                  <span class="text-gray-200 font-medium text-sm">
-                    {{ type }}
-                  </span>
-                </label>
-              </ng-container>
-            </div>  
-           
+            <h2 class="text-white">Alerts</h2>
+            <div class="flex flex-wrap items-center justify-center gap-4 whitespace-nowrap overflow-x-auto">
+                <ng-container *ngFor="let type of alerts">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" (change)="onCheckboxChange('alerts', type, $event)" class="accent-[#d84f4f] w-4 h-4" />
+                        <span class="text-gray-200 font-medium text-sm">{{ type }}</span>
+                    </label>
+                </ng-container>
+            </div>
+
+            <h2 class="text-white">Devices</h2>
+            <div class="flex flex-wrap items-center justify-center gap-4 whitespace-nowrap overflow-x-auto">
+                <ng-container *ngFor="let type of devices">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" (change)="onCheckboxChange('devices', type, $event)" class="accent-[#d84f4f] w-4 h-4" />
+                        <span class="text-gray-200 font-medium text-sm">{{ type }}</span>
+                    </label>
+                </ng-container>
+            </div>
+
+            <h2 class="text-white">Resolutions</h2>
+            <div class="flex flex-wrap items-center justify-center gap-4 whitespace-nowrap overflow-x-auto">
+                <ng-container *ngFor="let type of resolutions">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" (change)="onCheckboxChange('resolutions', type, $event)" class="accent-[#d84f4f] w-4 h-4" />
+                        <span class="text-gray-200 font-medium text-sm">{{ type }}</span>
+                    </label>
+                </ng-container>
+            </div>
+
+            <h2 class="text-white">Events</h2>
+            <div class="flex flex-wrap items-center justify-center gap-4 whitespace-nowrap overflow-x-auto">
+                <ng-container *ngFor="let type of events">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" (change)="onCheckboxChange('events',type, $event)" class="accent-[#d84f4f] w-4 h-4" />
+                        <span class="text-gray-200 font-medium text-sm">{{ type }}</span>
+                    </label>
+                </ng-container>
+            </div>
             <button type="submit" class="flex w-full bg-red-horizon justify-center text-white p-2 rounded">
                 Create Report
             </button>
-
         </form>
 
         <button class="text-white p-2 rounded" (click)="closeModal()">Close</button>
     </div>
-
 </div>
-

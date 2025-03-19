@@ -13,17 +13,25 @@ import { StateService } from '../../services/state.service';
 export class GenerateReportModalComponent {
   @Input() industries: string[] = []; // Receive the industries array
   @Input() alerts: string[] = [];
+  @Input() devices:string[] = [];
+  @Input() resolutions:string[] = [];
+  @Input() events:string[] = [];
+  @Input() continents:string[] = [];
   
   @Output() close = new EventEmitter<void>();
   constructor(private apiService: ApiService, private stateService: StateService){}
 
   newReport: any = {
-    username: "",
+    username:"",
     title:"",
-    created_at:"", 
-    industry:"",
-    location:"", 
-    alerts:[]
+    date_start:"",
+    date_end: "",
+    industry:[],
+    continents:[],
+    alerts:[],
+    devices:[],
+    resolutions:[],
+    events:[]
   }
 
   closeModal(): void {
@@ -54,16 +62,16 @@ export class GenerateReportModalComponent {
   }
 
   // Method to handle checkbox change
-  onCheckboxChange(alert: string, event: Event) {
+  onCheckboxChange(field:string, alert: string, event: Event) {
     const isChecked = (event.target as HTMLInputElement).checked; // Cast to HTMLInputElement
     if (isChecked) {
       // If checked, add the alert to the array
-      this.newReport.alerts.push(alert);
+      this.newReport[field].push(alert);
     } else {
       // If unchecked, remove the alert from the array
-      const index = this.newReport.alerts.indexOf(alert);
+      const index = this.newReport[field].indexOf(alert);
       if (index > -1) {
-        this.newReport.alerts.splice(index, 1);
+        this.newReport[field].splice(index, 1);
       }
     }
   }
@@ -74,11 +82,13 @@ export class GenerateReportModalComponent {
       alert("Please populate all fields");
       return;
     }
+    // turning industry into a list
+    this.newReport['industry'] = [this.newReport['industry']]
     this.apiService.postHermes("report", this.newReport)
       .catch(err=>{
         throw err;
       })
-    this.closeModal()
+    this.closeModal();
   }
 
 }

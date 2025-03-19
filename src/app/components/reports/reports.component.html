@@ -10,8 +10,7 @@
                     class="flex justify-between items-center p-2 border border-gray-300 rounded w-full">
                     <div>
                         <strong>
-                            {{ report.title }}</strong> ({{ report.created_at }}) Industry: 
-                        {{ report.industry }}
+                            {{ report.title }}</strong> ({{ report.date_start }} - {{ report.date_end }}) Industry: {{ report.industry }}
                     </div>
                     <div>
                         <button (click)="deleteReport(report.id)" class="text-red-600 hover:underline">
@@ -34,7 +33,7 @@
             <button class="flex w-full bg-red-horizon justify-center text-white p-2 rounded" (click)="showModal()" >
                 Create Report
             </button>
-            <app-generate-report-modal *ngIf="isModalVisible" [industries]="industries" [alerts]="alerts" (close)="hideModal()"></app-generate-report-modal>
+            <app-generate-report-modal *ngIf="isModalVisible" [industries]="industries" [continents]="continents" [alerts]="alerts" [devices]="devices" [resolutions]="resolutions" [events]="events" (close)="hideModal()"></app-generate-report-modal>
         </div>
     </div>
 
