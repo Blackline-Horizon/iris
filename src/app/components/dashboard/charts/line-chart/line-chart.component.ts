@@ -1,3 +1,4 @@
+// /Users/shanzi/iris/iris/src/app/components/dashboard/charts/line-chart/line-chart.component.ts
 import { Component, Input, OnInit, OnChanges, SimpleChanges, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, ChartConfiguration } from 'chart.js/auto';
@@ -22,7 +23,9 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
   chart: Chart | null = null;
   
   ngOnInit(): void {
+    // Initialize chart if data is available
     if (this.data && this.data.length > 0) {
+      console.log(`Initializing chart with ${this.data.length} data points and ${this.alerts?.length || 0} alerts`);
       this.createChart();
     }
   }
@@ -37,7 +40,14 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
   }
   
   ngOnChanges(changes: SimpleChanges): void {
+    // Recreate chart when inputs change
     if ((changes['data'] || changes['groupBy'] || changes['alerts']) && this.data && this.data.length > 0) {
+      console.log(`Data changed: ${this.data.length} data points, ${this.alerts?.length || 0} alerts`);
+      
+      // Check time series data
+      const nonZeroPoints = this.data.filter(point => point.value > 0);
+      console.log(`Time series has ${nonZeroPoints.length} non-zero points out of ${this.data.length}`);
+      
       this.createChart();
       
       // Apply a slight delay to ensure the chart updates correctly
@@ -50,6 +60,7 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
   }
   
   private createChart(): void {
+    // Destroy existing chart if any
     if (this.chart) {
       this.chart.destroy();
     }
@@ -67,31 +78,16 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
     const dataStartDate = sortedData.length > 0 ? new Date(sortedData[0].date) : null;
     const dataEndDate = sortedData.length > 0 ? new Date(sortedData[sortedData.length - 1].date) : null;
     
-    // Determine if data is clustered (concentrated in less than 20% of the total range)
+    // Add options for date range display
     let dateRangeOptions = {};
     if (dataStartDate && dataEndDate) {
       const displayStartDate = new Date(dataStartDate);
       const displayEndDate = new Date(dataEndDate);
       
-      // Add padding to the date range (10% on each side)
-      const totalRange = displayEndDate.getTime() - displayStartDate.getTime();
-      
-      // Check if all data points are clustered within a small part of the range
-      const activeDataPoints = sortedData.filter(point => 
-        new Date(point.date).getTime() > (displayEndDate.getTime() - (totalRange * 0.2))
-      );
-      
-      // If more than 80% of points are in the last 20% of the range, adjust visualization
-      if (activeDataPoints.length > 0 && activeDataPoints.length > sortedData.length * 0.8) {
-        const buffer = Math.max(5 * 24 * 60 * 60 * 1000, totalRange * 0.3); // At least 5 days or 30% of range
-        displayStartDate.setTime(displayEndDate.getTime() - buffer);
-        
-        // Set the date range options to focus on where the data actually is
-        dateRangeOptions = {
-          min: displayStartDate.toISOString().split('T')[0],
-          max: new Date(displayEndDate.getTime() + (buffer * 0.1)).toISOString().split('T')[0]
-        };
-      }
+      dateRangeOptions = {
+        min: displayStartDate.toISOString().split('T')[0],
+        max: displayEndDate.toISOString().split('T')[0]
+      };
     }
   
     // If groupBy is null, create a simple line chart
@@ -105,6 +101,7 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
         };
       }
       
+      // Create a line chart showing total alerts over time
       const config: ChartConfiguration = {
         type: 'line',
         data: {
@@ -170,20 +167,22 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
         return;
       }
       
-      // Generate all dates in range for consistent data points
-      const allDates = this.generateAllDatesInRange(
-        new Date(Math.min(...sortedData.map(d => new Date(d.date).getTime()))),
-        new Date(Math.max(...sortedData.map(d => new Date(d.date).getTime())))
+      // Sort dates for consistent display
+      const allDateStrings = labels.sort((a, b) => 
+        new Date(a).getTime() - new Date(b).getTime()
       );
       
-      // Sort dates and create a common set of labels
-      const allDateStrings = allDates.map(date => date.toISOString().split('T')[0]).sort();
-      
+      // Create one dataset for each group (sensor type, device type, etc.)
       const datasets = Object.entries(groupedData).map(([group, dataByDate], index) => {
         const color = this.getGroupColor(index);
         
         // Create a data array that matches the labels
         const dataValues = allDateStrings.map(dateStr => dataByDate[dateStr] || 0);
+        
+        // Calculate stats to debug
+        const sum = dataValues.reduce((a, b) => a + b, 0);
+        const max = Math.max(...dataValues);
+        console.log(`Dataset ${group}: sum=${sum}, max=${max}, avg=${(sum/dataValues.length).toFixed(2)}`);
         
         return {
           label: this.formatGroupName(group),
@@ -209,6 +208,7 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
         };
       }
       
+      // Create the grouped line chart with a dataset for each group
       const config: ChartConfiguration = {
         type: 'line',
         data: {
@@ -222,43 +222,160 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
   
-  // Generate all dates within a date range (for consistent time series)
-  private generateAllDatesInRange(startDate: Date, endDate: Date): Date[] {
-    const dates: Date[] = [];
-    const currentDate = new Date(startDate);
+  /**
+   * Groups alerts by date and type (sensor_type, device_type, etc.)
+   * This function analyzes all alerts and creates a data structure 
+   * that can be used by Chart.js to display grouped data
+   */
+  private groupAlertsByDateAndType(): Record<string, Record<string, number>> {
+    if (!this.groupBy || !this.data || this.data.length === 0 || !this.alerts || this.alerts.length === 0) {
+      return {};
+    }
     
-    // Set time to midnight for consistent date comparison
-    currentDate.setHours(0, 0, 0, 0);
-    const lastDate = new Date(endDate);
-    lastDate.setHours(0, 0, 0, 0);
+    console.log(`Grouping ${this.alerts.length} alerts by ${this.groupBy}`);
     
-    // Calculate total days in range
-    const totalDays = Math.round((lastDate.getTime() - currentDate.getTime()) / (24 * 60 * 60 * 1000));
+    // Find date range from the data
+    const dates = this.data.map(item => item.date).sort();
+    console.log(`Date range: ${dates[0]} to ${dates[dates.length - 1]}, ${dates.length} days`);
     
-    // For very large date ranges, we'll sample dates to avoid performance issues
-    // (more than 60 days)
-    if (totalDays > 60) {
-      const interval = Math.ceil(totalDays / 60);
-      while (currentDate <= lastDate) {
-        dates.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + interval);
+    // Create a result structure for each type and date
+    const result: Record<string, Record<string, number>> = {};
+    
+    // First, get all unique values for the grouping field
+    const groupValues = [...new Set(this.alerts.map(alert => {
+      return alert[this.groupBy as keyof EventRecord] || 'Unknown';
+    }))];
+    
+    console.log(`Found ${groupValues.length} unique ${this.groupBy} values:`, groupValues);
+    
+    // Initialize all groups with zero counts for each date
+    groupValues.forEach(groupValue => {
+      if (groupValue !== undefined && groupValue !== null) {
+        result[String(groupValue)] = {};
+        dates.forEach(date => {
+          result[String(groupValue)][date] = 0;
+        });
+      }
+    });
+    
+    // Count alerts by date and group - with detailed debugging
+    let totalCounted = 0;
+    let datesNotFound = 0;
+    
+    // Sample a few alerts to debug date formats
+    if (this.alerts.length > 0) {
+      console.log('Sample alert format:', this.alerts[0]);
+    }
+    
+    const dateMap = new Map<string, string[]>();
+    
+    // Create a map of normalized dates for faster lookups
+    const normalizedDateMap = new Map<string, string>();
+    dates.forEach(date => {
+      const normalized = new Date(date).toISOString().split('T')[0];
+      normalizedDateMap.set(normalized, date);
+    });
+    
+    this.alerts.forEach(alert => {
+      if (!this.groupBy) return;
+      
+      // Extract the date part from date_created (format: YYYY-MM-DD HH:MM:SS)
+      const alertDateParts = alert.date_created.split(' ');
+      const dateStr = alertDateParts[0]; // Extract YYYY-MM-DD
+      
+      // IMPORTANT FIX: Normalize the alert date for matching
+      const normalizedAlertDate = new Date(dateStr).toISOString().split('T')[0];
+      
+      // Find the corresponding original date from our normalized map
+      const matchingOriginalDate = normalizedDateMap.get(normalizedAlertDate);
+      
+      // If no matching date was found
+      if (!matchingOriginalDate) {
+        // Track which dates are not found
+        if (!dateMap.has(dateStr)) {
+          dateMap.set(dateStr, []);
+        }
+        dateMap.get(dateStr)?.push(String(alert[this.groupBy as keyof EventRecord] || 'Unknown'));
+        
+        datesNotFound++;
+        return;
       }
       
-      // Make sure the end date is included
-      if (dates.length === 0 || dates[dates.length - 1].getTime() !== lastDate.getTime()) {
-        dates.push(new Date(lastDate));
+      // Get the group value for this alert
+      const groupValue = String(alert[this.groupBy as keyof EventRecord] || 'Unknown');
+      
+      // Increment the count for this group and date - use the matching date from our chart data
+      if (result[groupValue]) {
+        result[groupValue][matchingOriginalDate] = (result[groupValue][matchingOriginalDate] || 0) + 1;
+        totalCounted++;
       }
-    } else {
-      // For smaller ranges, include every day
-      while (currentDate <= lastDate) {
-        dates.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
+    });
+    
+    console.log(`Counted ${totalCounted} alerts, ${datesNotFound} alerts had dates not in chart range`);
+    
+    // If we have lots of dates not found, log some of them
+    if (datesNotFound > 0) {
+      const missedDates = Array.from(dateMap.entries()).slice(0, 5);
+      console.log('Sample dates not found:', missedDates);
+    }
+    
+    // Log some sample data to verify
+    Object.entries(result).slice(0, 3).forEach(([group, dateValues]) => {
+      const nonZeroDates = Object.entries(dateValues)
+        .filter(([_, value]) => value > 0)
+        .slice(0, 5);
+      
+      console.log(`Sample data for group ${group}:`, nonZeroDates);
+    });
+    
+    // Filter out groups with minimal data (less than 10% of the largest group)
+    const groupSums: { group: string, sum: number }[] = [];
+    Object.entries(result).forEach(([group, dateCounts]) => {
+      const sum = Object.values(dateCounts).reduce((acc, val) => acc + val, 0);
+      groupSums.push({ group, sum });
+    });
+    
+    groupSums.sort((a, b) => b.sum - a.sum);
+    console.log('Group sums:', groupSums);
+    
+    if (groupSums.length > 0) {
+      const largestSum = groupSums[0].sum;
+      const threshold = largestSum * 0.1;
+      
+      const mainGroups = groupSums.filter(item => item.sum >= threshold);
+      const smallGroups = groupSums.filter(item => item.sum < threshold);
+      
+      if (smallGroups.length > 0) {
+        // Combine small groups into "Other"
+        const otherCounts: Record<string, number> = {};
+        dates.forEach(date => {
+          otherCounts[date] = smallGroups.reduce((sum, { group }) => {
+            return sum + (result[group][date] || 0);
+          }, 0);
+        });
+        
+        // Keep only main groups and add "Other"
+        const filteredResult: Record<string, Record<string, number>> = {};
+        mainGroups.forEach(({ group }) => {
+          filteredResult[group] = result[group];
+        });
+        
+        // Only add "Other" if it has some non-zero values
+        if (Object.values(otherCounts).some(v => v > 0)) {
+          filteredResult['Other'] = otherCounts;
+        }
+        
+        return filteredResult;
       }
     }
     
-    return dates;
+    return result;
   }
   
+  /**
+   * Configure chart options
+   * @param showLegend Whether to show the legend (true for grouped data)
+   */
   private getChartOptions(showLegend: boolean = false): any {
     return {
       responsive: true,
@@ -334,6 +451,7 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
         },
         y: {
           beginAtZero: true,
+          suggestedMax: 10, // Start with a reasonable max value
           grid: {
             color: 'rgba(255, 255, 255, 0.05)'
           },
@@ -368,132 +486,9 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
     };
   }
   
-  private groupAlertsByDateAndType(): Record<string, Record<string, number>> {
-    if (!this.groupBy || !this.alerts || this.alerts.length === 0 || !this.data || this.data.length === 0) {
-      return {};
-    }
-    
-    // Find date range from the data
-    const dates = this.data.map(item => item.date).sort();
-    const startDate = new Date(dates[0]);
-    const endDate = new Date(dates[dates.length - 1]);
-    
-    // Generate all dates in the range for consistent data points
-    const allDates = this.generateAllDatesInRange(startDate, endDate)
-      .map(d => d.toISOString().split('T')[0]);
-    
-    // Get all unique group values
-    const groupValues = [...new Set(this.alerts.map(alert => {
-      return alert[this.groupBy as keyof EventRecord] || 'Unknown';
-    }))];
-    
-    // Create a result structure with all dates initialized to 0
-    const result: Record<string, Record<string, number>> = {};
-    groupValues.forEach(groupValue => {
-      if (groupValue !== undefined && groupValue !== null) {
-        result[String(groupValue)] = {};
-        allDates.forEach(date => {
-          result[String(groupValue)][date] = 0;
-        });
-      }
-    });
-    
-    // Fill in the data by counting alerts for each group and date
-    this.alerts.forEach(alert => {
-      // Extract date part from the date_created field
-      const alertDateParts = alert.date_created.split(' ');
-      const alertDateStr = alertDateParts[0]; // Extract YYYY-MM-DD
-      
-      if (this.groupBy) {
-        const groupValue = String(alert[this.groupBy as keyof EventRecord] || 'Unknown');
-        
-        if (groupValue && result[groupValue] && result[groupValue][alertDateStr] !== undefined) {
-          // Directly increment if the exact date exists
-          result[groupValue][alertDateStr] += 1;
-        } else if (groupValue && result[groupValue]) {
-          // Find closest date if exact date not in our range
-          const closestDate = this.findClosestDate(alertDateStr, allDates);
-          if (closestDate) {
-            result[groupValue][closestDate] += 1;
-          }
-        }
-      }
-    });
-    
-    // Filter out groups with minimal data
-    const groupSums: { group: string, sum: number }[] = [];
-    Object.entries(result).forEach(([group, dateCounts]) => {
-      const sum = Object.values(dateCounts).reduce((acc, val) => acc + val, 0);
-      groupSums.push({ group, sum });
-    });
-    
-    groupSums.sort((a, b) => b.sum - a.sum);
-    
-    if (groupSums.length > 0) {
-      const largestSum = groupSums[0].sum;
-      const threshold = largestSum * 0.1;
-      
-      const mainGroups = groupSums.filter(item => item.sum >= threshold);
-      const smallGroups = groupSums.filter(item => item.sum < threshold);
-      
-      if (smallGroups.length > 0) {
-        // Combine small groups into "Other"
-        const otherCounts: Record<string, number> = {};
-        allDates.forEach(date => {
-          otherCounts[date] = smallGroups.reduce((sum, { group }) => {
-            return sum + (result[group][date] || 0);
-          }, 0);
-        });
-        
-        // Keep only main groups and add "Other"
-        const filteredResult: Record<string, Record<string, number>> = {};
-        mainGroups.forEach(({ group }) => {
-          filteredResult[group] = result[group];
-        });
-        
-        // Only add "Other" if it has some non-zero values
-        if (Object.values(otherCounts).some(v => v > 0)) {
-          filteredResult['Other'] = otherCounts;
-        }
-        
-        return filteredResult;
-      }
-    }
-    
-    return result;
-  }
-  
-  // Find the closest date in an array of date strings
-  private findClosestDate(targetDateStr: string, dates: string[]): string | undefined {
-    if (!targetDateStr || dates.length === 0) return undefined;
-    
-    // Try direct match first
-    if (dates.includes(targetDateStr)) {
-      return targetDateStr;
-    }
-    
-    try {
-      const targetDate = new Date(targetDateStr);
-      let closestDate = dates[0];
-      let smallestDiff = Math.abs(targetDate.getTime() - new Date(dates[0]).getTime());
-      
-      for (let i = 1; i < dates.length; i++) {
-        const currentDate = new Date(dates[i]);
-        const diff = Math.abs(targetDate.getTime() - currentDate.getTime());
-        
-        if (diff < smallestDiff) {
-          smallestDiff = diff;
-          closestDate = dates[i];
-        }
-      }
-      
-      return closestDate;
-    } catch (e) {
-      console.error("Error finding closest date:", e);
-      return dates[0]; // Fallback to first date
-    }
-  }
-  
+  /**
+   * Format group names for better readability in the chart legend
+   */
   private formatGroupName(name: string): string {
     // Format group names to be more readable
     if (!name) return 'Unknown';
@@ -514,6 +509,9 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
     return formatted;
   }
   
+  /**
+   * Get a color for each group based on index
+   */
   private getGroupColor(index: number): string {
     const colors = [
       '#e74c3c', // Red
@@ -531,6 +529,9 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
     return colors[index % colors.length];
   }
   
+  /**
+   * Convert hex color to rgba for transparency
+   */
   private hexToRgba(hex: string, alpha: number): string {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);

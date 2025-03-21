@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { MapComponent } from './components/map/map.component';
 import { ReportsComponent } from './components/reports/reports.component';
 import { SettingsComponent } from './components/settings/settings.component';
@@ -13,11 +14,8 @@ export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'status', component: StatusComponent },
   { path: 'login', component: LoginComponent },
-  { 
-    path: 'dashboard', 
-    loadComponent: () => import('./components/dashboard/dashboard.component').then(c => c.DashboardComponent)
-  },
-  { path: 'map', component: MapComponent},
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'map', component: MapComponent, canActivate: [AuthGuard] },
   { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
