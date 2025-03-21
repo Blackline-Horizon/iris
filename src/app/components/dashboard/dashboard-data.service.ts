@@ -1,22 +1,23 @@
 // /Users/shanzi/iris/iris/src/app/components/dashboard/dashboard-data.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface EventRecord {
   id: number;
   date_created: string;
-  name: string;
+  name?: string;
   assigned_user?: string;
   resolution_reason: string;
   sensor_type: string;
   event_type: string;
   industry: string;
   device_type: string;
-  current_status: string;
-  country_name: string;
-  lat?: number;
-  lng?: number;
+  current_status?: string;
+  country: string;  // Changed from country_name to match backend
+  latitude?: number; // Changed from lat
+  longitude?: number; // Changed from lng
+  [key: string]: any; // Index signature to allow accessing properties by string
 }
 
 export interface FilterOptions {
@@ -32,20 +33,8 @@ export interface FilterOptions {
   };
 }
 
-export interface AlertsResponse {
+export interface DashboardResponse {
   alerts: EventRecord[];
-  meta: {
-    sensorTypes: string[];
-    industries: string[];
-    eventTypes: string[];
-    resolutionReasons: string[];
-    deviceTypes: string[];
-    countries: {
-      EU: string[];
-      'North America': string[];
-      Other: string[];
-    };
-  };
   metrics: {
     total_alerts: number;
     avg_alerts_per_day: number;
@@ -58,6 +47,8 @@ export interface AlertsResponse {
       [key: string]: Record<string, number>; // Add index signature
     };
   };
+  // Add time_series property
+  time_series?: Array<{ date: string, value: number }>;
 }
 
 @Injectable({
@@ -78,61 +69,98 @@ export class DashboardDataService {
     continents?: string[];
     startDate?: string;
     endDate?: string;
-  }): Observable<AlertsResponse> {
-    let params = new HttpParams();
+  }): Observable<DashboardResponse> {
+    // Create request body in the format expected by the new API
+    const requestBody: any = {};
     
     if (filters) {
       if (filters.sensorTypes && filters.sensorTypes.length) {
-        filters.sensorTypes.forEach(type => {
-          params = params.append('sensor_types', type);
-        });
+        requestBody.sensor_type = filters.sensorTypes;
       }
       
       if (filters.industries && filters.industries.length) {
-        filters.industries.forEach(industry => {
-          params = params.append('industries', industry);
-        });
+        requestBody.industry = filters.industries;
       }
       
       if (filters.eventTypes && filters.eventTypes.length) {
-        filters.eventTypes.forEach(type => {
-          params = params.append('event_types', type);
-        });
+        requestBody.event_type = filters.eventTypes;
       }
       
       if (filters.resolutionReasons && filters.resolutionReasons.length) {
-        filters.resolutionReasons.forEach(reason => {
-          params = params.append('resolution_reasons', reason);
-        });
+        requestBody.resolution_reason = filters.resolutionReasons;
       }
       
       if (filters.deviceTypes && filters.deviceTypes.length) {
-        filters.deviceTypes.forEach(type => {
-          params = params.append('device_types', type);
-        });
+        requestBody.device_type = filters.deviceTypes;
       }
       
       if (filters.countries && filters.countries.length) {
-        filters.countries.forEach(country => {
-          params = params.append('countries', country);
-        });
+        requestBody.country = filters.countries;
       }
       
       if (filters.continents && filters.continents.length) {
-        filters.continents.forEach(continent => {
-          params = params.append('continents', continent);
-        });
+        requestBody.continent = filters.continents;
       }
       
       if (filters.startDate) {
-        params = params.set('start_date', filters.startDate);
+        requestBody.start_date = new Date(filters.startDate);
       }
       
       if (filters.endDate) {
-        params = params.set('end_date', filters.endDate);
+        requestBody.end_date = new Date(filters.endDate);
       }
     }
     
-    return this.http.get<AlertsResponse>(`${this.apiBaseUrl}/alerts`, { params });
+    // Use the new dashboard_data endpoint with POST method
+    return this.http.post<DashboardResponse>(`${this.apiBaseUrl}/dashboard_data`, requestBody);
+  }
+
+  // Add method for report data
+  getReportData(filters: {
+    resolutionReasons?: string[];
+    deviceTypes?: string[];
+    sensorTypes?: string[];
+    eventTypes?: string[];
+    industries?: string[];
+    continents?: string[];
+    countries?: string[];
+    dateStart: Date;
+    dateEnd: Date;
+  }): Observable<any> {
+    // Create request body in the format expected by the report_data API
+    const requestBody: any = {
+      date_start: filters.dateStart,
+      date_end: filters.dateEnd
+    };
+    
+    if (filters.resolutionReasons && filters.resolutionReasons.length) {
+      requestBody.resolution_reason = filters.resolutionReasons;
+    }
+    
+    if (filters.deviceTypes && filters.deviceTypes.length) {
+      requestBody.device_type = filters.deviceTypes;
+    }
+    
+    if (filters.sensorTypes && filters.sensorTypes.length) {
+      requestBody.sensor_type = filters.sensorTypes;
+    }
+    
+    if (filters.eventTypes && filters.eventTypes.length) {
+      requestBody.event_type = filters.eventTypes;
+    }
+    
+    if (filters.industries && filters.industries.length) {
+      requestBody.industry = filters.industries;
+    }
+    
+    if (filters.continents && filters.continents.length) {
+      requestBody.continent = filters.continents;
+    }
+    
+    if (filters.countries && filters.countries.length) {
+      requestBody.country = filters.countries;
+    }
+    
+    return this.http.post<any>(`${this.apiBaseUrl}/report_data`, requestBody);
   }
 }

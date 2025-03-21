@@ -1,273 +1,274 @@
+<!-- /Users/shanzi/iris/iris/src/app/components/dashboard/dashboard-filters/dashboard-filters.component.html-->
 <div class="filters-container" [ngClass]="{'compact-mode': compact}">
-    <!-- Filter Categories -->
-    <div class="filter-categories">
-      <!-- Sensor Type Filter -->
-      <div class="filter-group">
-        <div class="filter-header" (click)="toggleFilterGroup('sensorType')">
-          <h3>Sensor Type</h3>
-          <div class="filter-options">
-            <button class="select-all-btn" (click)="toggleAllSensorTypes($event); $event.stopPropagation()">
-              {{ areAllSelected('sensorTypes') ? 'Deselect All' : 'Select All' }}
-            </button>
-            <i class="fas" [ngClass]="isFilterGroupOpen['sensorType'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-          </div>
-        </div>
-        
-        <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['sensorType']}">
-          <div class="filter-options-grid">
-            <label 
-              *ngFor="let sensorType of filterOptions?.sensorTypes" 
-              class="checkbox-container"
-            >
-              <input 
-                type="checkbox" 
-                [checked]="isInFilterArray('sensorTypes', sensorType)"
-                (change)="toggleOption(appliedFilters.sensorTypes, sensorType)"
-              >
-              <span class="checkmark"></span>
-              <span class="label-text">{{ sensorType }}</span>
-            </label>
-          </div>
-        </div>
-      </div>
-    
-      <!-- Industry Filter -->
-      <div class="filter-group">
-        <div class="filter-header" (click)="toggleFilterGroup('industry')">
-          <h3>Industry</h3>
-          <div class="filter-options">
-            <button class="select-all-btn" (click)="toggleAllIndustries($event); $event.stopPropagation()">
-              {{ areAllSelected('industries') ? 'Deselect All' : 'Select All' }}
-            </button>
-            <i class="fas" [ngClass]="isFilterGroupOpen['industry'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-          </div>
-        </div>
-        
-        <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['industry']}">
-          <div class="filter-options-grid">
-            <label 
-              *ngFor="let industry of filterOptions?.industries" 
-              class="checkbox-container"
-            >
-              <input 
-                type="checkbox" 
-                [checked]="isInFilterArray('industries', industry)"
-                (change)="toggleOption(appliedFilters.industries, industry)"
-              >
-              <span class="checkmark"></span>
-              <span class="label-text">{{ industry }}</span>
-            </label>
-          </div>
-        </div>
-      </div>
-    
-      <!-- Event Type Filter -->
-      <div class="filter-group" *ngIf="dashboardType !== 'map'">
-        <div class="filter-header" (click)="toggleFilterGroup('eventType')">
-          <h3>Event Type</h3>
-          <div class="filter-options">
-            <button class="select-all-btn" (click)="toggleAllEventTypes($event); $event.stopPropagation()">
-              {{ areAllSelected('eventTypes') ? 'Deselect All' : 'Select All' }}
-            </button>
-            <i class="fas" [ngClass]="isFilterGroupOpen['eventType'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-          </div>
-        </div>
-        
-        <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['eventType']}">
-          <div class="filter-options-grid">
-            <label 
-              *ngFor="let eventType of filterOptions?.eventTypes" 
-              class="checkbox-container"
-            >
-              <input 
-                type="checkbox" 
-                [checked]="isInFilterArray('eventTypes', eventType)"
-                (change)="toggleOption(appliedFilters.eventTypes, eventType)"
-              >
-              <span class="checkmark"></span>
-              <span class="label-text">{{ eventType.replace('_', ' ') | titlecase }}</span>
-            </label>
-          </div>
+  <!-- Filter Categories -->
+  <div class="filter-categories">
+    <!-- Sensor Type Filter -->
+    <div class="filter-group">
+      <div class="filter-header" (click)="toggleFilterGroup('sensorType')">
+        <h3>Sensor Type</h3>
+        <div class="filter-options">
+          <button class="select-all-btn" (click)="toggleAllSensorTypes($event)">
+            {{ areAllSelected('sensorTypes') ? 'Deselect All' : 'Select All' }}
+          </button>
+          <i class="fas" [ngClass]="isFilterGroupOpen['sensorType'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
         </div>
       </div>
       
-      <!-- Resolution Reason Filter -->
-      <div class="filter-group" *ngIf="dashboardType !== 'map'">
-        <div class="filter-header" (click)="toggleFilterGroup('resolutionReason')">
-          <h3>Resolution Reason</h3>
-          <div class="filter-options">
-            <button class="select-all-btn" (click)="toggleAllResolutionReasons($event); $event.stopPropagation()">
-              {{ areAllSelected('resolutionReasons') ? 'Deselect All' : 'Select All' }}
-            </button>
-            <i class="fas" [ngClass]="isFilterGroupOpen['resolutionReason'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-          </div>
-        </div>
-        
-        <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['resolutionReason']}">
-          <div class="filter-options-grid">
-            <label 
-              *ngFor="let reason of filterOptions?.resolutionReasons" 
-              class="checkbox-container"
+      <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['sensorType']}">
+        <div class="filter-options-grid">
+          <label 
+            *ngFor="let sensorType of filterOptions?.sensorTypes" 
+            class="checkbox-container"
+          >
+            <input 
+              type="checkbox" 
+              [checked]="isInFilterArray('sensorTypes', sensorType)"
+              (change)="toggleOption(appliedFilters.sensorTypes, sensorType)"
             >
-              <input 
-                type="checkbox" 
-                [checked]="isInFilterArray('resolutionReasons', reason)"
-                (change)="toggleOption(appliedFilters.resolutionReasons, reason)"
-              >
-              <span class="checkmark"></span>
-              <span class="label-text">{{ reason }}</span>
-            </label>
-          </div>
+            <span class="checkmark"></span>
+            <span class="label-text">{{ sensorType.split('_').join(' ') | titlecase }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Industry Filter -->
+    <div class="filter-group">
+      <div class="filter-header" (click)="toggleFilterGroup('industry')">
+        <h3>Industry</h3>
+        <div class="filter-options">
+          <button class="select-all-btn" (click)="toggleAllIndustries($event)">
+            {{ areAllSelected('industries') ? 'Deselect All' : 'Select All' }}
+          </button>
+          <i class="fas" [ngClass]="isFilterGroupOpen['industry'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
         </div>
       </div>
       
-      <!-- Device Type Filter -->
-      <div class="filter-group" *ngIf="dashboardType !== 'map'">
-        <div class="filter-header" (click)="toggleFilterGroup('deviceType')">
-          <h3>Device Type</h3>
-          <div class="filter-options">
-            <button class="select-all-btn" (click)="toggleAllDeviceTypes($event); $event.stopPropagation()">
-              {{ areAllSelected('deviceTypes') ? 'Deselect All' : 'Select All' }}
-            </button>
-            <i class="fas" [ngClass]="isFilterGroupOpen['deviceType'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-          </div>
-        </div>
-        
-        <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['deviceType']}">
-          <div class="filter-options-grid">
-            <label 
-              *ngFor="let deviceType of filterOptions?.deviceTypes" 
-              class="checkbox-container"
+      <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['industry']}">
+        <div class="filter-options-grid">
+          <label 
+            *ngFor="let industry of filterOptions?.industries" 
+            class="checkbox-container"
+          >
+            <input 
+              type="checkbox" 
+              [checked]="isInFilterArray('industries', industry)"
+              (change)="toggleOption(appliedFilters.industries, industry)"
             >
+            <span class="checkmark"></span>
+            <span class="label-text">{{ industry.split('_').join(' ') | titlecase }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Event Type Filter -->
+    <div class="filter-group" *ngIf="dashboardType !== 'map'">
+      <div class="filter-header" (click)="toggleFilterGroup('eventType')">
+        <h3>Event Type</h3>
+        <div class="filter-options">
+          <button class="select-all-btn" (click)="toggleAllEventTypes($event)">
+            {{ areAllSelected('eventTypes') ? 'Deselect All' : 'Select All' }}
+          </button>
+          <i class="fas" [ngClass]="isFilterGroupOpen['eventType'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        </div>
+      </div>
+      
+      <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['eventType']}">
+        <div class="filter-options-grid">
+          <label 
+            *ngFor="let eventType of filterOptions?.eventTypes" 
+            class="checkbox-container"
+          >
+            <input 
+              type="checkbox" 
+              [checked]="isInFilterArray('eventTypes', eventType)"
+              (change)="toggleOption(appliedFilters.eventTypes, eventType)"
+            >
+            <span class="checkmark"></span>
+            <span class="label-text">{{ eventType.split('_').join(' ') | titlecase }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Resolution Reason Filter -->
+    <div class="filter-group" *ngIf="dashboardType !== 'map'">
+      <div class="filter-header" (click)="toggleFilterGroup('resolutionReason')">
+        <h3>Resolution Reason</h3>
+        <div class="filter-options">
+          <button class="select-all-btn" (click)="toggleAllResolutionReasons($event)">
+            {{ areAllSelected('resolutionReasons') ? 'Deselect All' : 'Select All' }}
+          </button>
+          <i class="fas" [ngClass]="isFilterGroupOpen['resolutionReason'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        </div>
+      </div>
+      
+      <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['resolutionReason']}">
+        <div class="filter-options-grid">
+          <label 
+            *ngFor="let reason of filterOptions?.resolutionReasons" 
+            class="checkbox-container"
+          >
+            <input 
+              type="checkbox" 
+              [checked]="isInFilterArray('resolutionReasons', reason)"
+              (change)="toggleOption(appliedFilters.resolutionReasons, reason)"
+            >
+            <span class="checkmark"></span>
+            <span class="label-text">{{ reason.split('_').join(' ') | titlecase }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Device Type Filter -->
+    <div class="filter-group" *ngIf="dashboardType !== 'map'">
+      <div class="filter-header" (click)="toggleFilterGroup('deviceType')">
+        <h3>Device Type</h3>
+        <div class="filter-options">
+          <button class="select-all-btn" (click)="toggleAllDeviceTypes($event)">
+            {{ areAllSelected('deviceTypes') ? 'Deselect All' : 'Select All' }}
+          </button>
+          <i class="fas" [ngClass]="isFilterGroupOpen['deviceType'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        </div>
+      </div>
+      
+      <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['deviceType']}">
+        <div class="filter-options-grid">
+          <label 
+            *ngFor="let deviceType of filterOptions?.deviceTypes" 
+            class="checkbox-container"
+          >
+            <input 
+              type="checkbox" 
+              [checked]="isInFilterArray('deviceTypes', deviceType)"
+              (change)="toggleOption(appliedFilters.deviceTypes, deviceType)"
+            >
+            <span class="checkmark"></span>
+            <span class="label-text">{{ deviceType.split('_').join(' ') | titlecase }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Continent/Country Filter -->
+    <div class="filter-group">
+      <div class="filter-header" (click)="toggleFilterGroup('continentCountry')">
+        <h3>Region/Country</h3>
+        <i class="fas" [ngClass]="isFilterGroupOpen['continentCountry'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+      </div>
+      
+      <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['continentCountry']}">
+        <!-- Regions Section -->
+        <div class="regions-section">
+          <h4>Regions</h4>
+          <div class="filter-options-grid">
+            <label class="checkbox-container">
               <input 
                 type="checkbox" 
-                [checked]="isInFilterArray('deviceTypes', deviceType)"
-                (change)="toggleOption(appliedFilters.deviceTypes, deviceType)"
+                [checked]="isContinentSelected('EU')" 
+                (change)="toggleContinent('EU', $event)"
               >
               <span class="checkmark"></span>
-              <span class="label-text">{{ deviceType }}</span>
+              <span class="label-text">Europe</span>
+            </label>
+            
+            <label class="checkbox-container">
+              <input 
+                type="checkbox" 
+                [checked]="isContinentSelected('North America')" 
+                (change)="toggleContinent('North America', $event)"
+              >
+              <span class="checkmark"></span>
+              <span class="label-text">North America</span>
+            </label>
+            
+            <label class="checkbox-container">
+              <input 
+                type="checkbox" 
+                [checked]="isContinentSelected('Other')" 
+                (change)="toggleContinent('Other', $event)"
+              >
+              <span class="checkmark"></span>
+              <span class="label-text">Other Regions</span>
             </label>
           </div>
         </div>
-      </div>
-    
-      <!-- Continent/Country Filter -->
-      <div class="filter-group">
-        <div class="filter-header" (click)="toggleFilterGroup('continentCountry')">
-          <h3>Region/Country</h3>
-          <i class="fas" [ngClass]="isFilterGroupOpen['continentCountry'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-        </div>
         
-        <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['continentCountry']}">
-          <!-- Regions Section -->
-          <div class="regions-section">
-            <h4>Regions</h4>
-            <div class="filter-options-grid">
-              <label class="checkbox-container">
-                <input 
-                  type="checkbox" 
-                  [checked]="isContinentSelected('EU')" 
-                  (change)="toggleContinent('EU', $event)"
-                >
-                <span class="checkmark"></span>
-                <span class="label-text">Europe</span>
-              </label>
-              
-              <label class="checkbox-container">
-                <input 
-                  type="checkbox" 
-                  [checked]="isContinentSelected('North America')" 
-                  (change)="toggleContinent('North America', $event)"
-                >
-                <span class="checkmark"></span>
-                <span class="label-text">North America</span>
-              </label>
-              
-              <label class="checkbox-container">
-                <input 
-                  type="checkbox" 
-                  [checked]="isContinentSelected('Other')" 
-                  (change)="toggleContinent('Other', $event)"
-                >
-                <span class="checkmark"></span>
-                <span class="label-text">Other Regions</span>
-              </label>
-            </div>
+        <!-- Countries Section -->
+        <div class="countries-section" *ngIf="availableCountries.length > 0">
+          <div class="countries-header">
+            <h4>Countries</h4>
+            <button class="select-all-btn" (click)="toggleAllCountries($event)">
+              {{ areAllSelected('countries') ? 'Deselect All' : 'Select All' }}
+            </button>
           </div>
           
-          <!-- Countries Section -->
-          <div class="countries-section" *ngIf="availableCountries.length > 0">
-            <div class="countries-header">
-              <h4>Countries</h4>
-              <button class="select-all-btn" (click)="toggleAllCountries($event)">
-                {{ areAllSelected('countries') ? 'Deselect All' : 'Select All' }}
-              </button>
-            </div>
-            
-            <div class="filter-options-grid">
-              <label 
-                *ngFor="let country of availableCountries" 
-                class="checkbox-container"
-              >
-                <input 
-                  type="checkbox" 
-                  [checked]="isInFilterArray('countries', country)"
-                  (change)="toggleOption(appliedFilters.countries, country)"
-                >
-                <span class="checkmark"></span>
-                <span class="label-text">{{ country }}</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    
-      <!-- Date Range Filter -->
-      <div class="filter-group" *ngIf="dashboardType !== 'map'">
-        <div class="filter-header" (click)="toggleFilterGroup('dateRange')">
-          <h3>Date Range</h3>
-          <i class="fas" [ngClass]="isFilterGroupOpen['dateRange'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-        </div>
-        
-        <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['dateRange']}">
-          <div class="date-range-picker">
-            <div class="date-input">
-              <label>From</label>
+          <div class="filter-options-grid">
+            <label 
+              *ngFor="let country of availableCountries" 
+              class="checkbox-container"
+            >
               <input 
-                type="date" 
-                [(ngModel)]="appliedFilters.startDate"
-                (change)="filtersChanged.emit(appliedFilters)"
+                type="checkbox" 
+                [checked]="isInFilterArray('countries', country)"
+                (change)="toggleOption(appliedFilters.countries, country)"
               >
-            </div>
-            
-            <div class="date-input">
-              <label>To</label>
-              <input 
-                type="date" 
-                [(ngModel)]="appliedFilters.endDate"
-                (change)="filtersChanged.emit(appliedFilters)"
-              >
-            </div>
+              <span class="checkmark"></span>
+              <span class="label-text">{{ country }}</span>
+            </label>
           </div>
         </div>
       </div>
     </div>
-    
-    <!-- Filter Actions -->
-    <div class="filter-actions">
-      <button 
-        class="apply-btn" 
-        (click)="applyFilters()"
-      >
-        Apply Filters
-      </button>
+  
+    <!-- Date Range Filter -->
+    <div class="filter-group" *ngIf="dashboardType !== 'map'">
+      <div class="filter-header" (click)="toggleFilterGroup('dateRange')">
+        <h3>Date Range</h3>
+        <i class="fas" [ngClass]="isFilterGroupOpen['dateRange'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+      </div>
       
-      <button 
-        class="reset-btn" 
-        (click)="resetFilters()"
-        *ngIf="!hideResetButton"
-      >
-        Reset All
-      </button>
+      <div class="filter-content" [ngClass]="{'open': isFilterGroupOpen['dateRange']}">
+        <div class="date-range-picker">
+          <div class="date-input">
+            <label>From</label>
+            <input 
+              type="date" 
+              [(ngModel)]="appliedFilters.startDate"
+              (change)="filtersChanged.emit(appliedFilters)"
+            >
+          </div>
+          
+          <div class="date-input">
+            <label>To</label>
+            <input 
+              type="date" 
+              [(ngModel)]="appliedFilters.endDate"
+              (change)="filtersChanged.emit(appliedFilters)"
+            >
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+  
+  <!-- Filter Actions -->
+  <div class="filter-actions">
+    <button 
+      class="apply-btn" 
+      (click)="applyFilters()"
+    >
+      Apply Filters
+    </button>
+    
+    <button 
+      class="reset-btn" 
+      (click)="resetFilters()"
+      *ngIf="!hideResetButton"
+    >
+      Reset All
+    </button>
+  </div>
+</div>

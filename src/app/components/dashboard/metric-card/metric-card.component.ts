@@ -1,3 +1,4 @@
+// /Users/shanzi/iris/iris/src/app/components/dashboard/metric-card/metric-card.component.ts
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 

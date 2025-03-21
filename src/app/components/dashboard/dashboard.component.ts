@@ -79,7 +79,15 @@ export class DashboardComponent implements OnInit {
   }
   
   ngOnInit(): void {
-    // Load data without setting default date range
+    // Set default date range - last 30 days
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    this.appliedFilters.endDate = this.formatDate(today);
+    this.appliedFilters.startDate = this.formatDate(thirtyDaysAgo);
+    
+    // Load data with default date range
     this.loadData();
   }
   
@@ -114,33 +122,27 @@ export class DashboardComponent implements OnInit {
         this.totalAlerts = response.metrics.total_alerts;
         this.avgAlertsPerDay = response.metrics.avg_alerts_per_day;
         
-        // Extract filter options from the response
-        this.filterOptions = {
-          sensorTypes: response.meta.sensorTypes,
-          industries: response.meta.industries,
-          eventTypes: response.meta.eventTypes,
-          resolutionReasons: response.meta.resolutionReasons,
-          deviceTypes: response.meta.deviceTypes,
-          countries: response.meta.countries
-        };
-        
-        // Debug logging to check distribution data
-        console.log('Selected distribution variable:', this.selectedDistributionVariable);
-        console.log('Distribution data from API:', response.metrics?.distribution_data);
+        // Create filter options from distinct values if not already available
+        if (!this.filterOptions) {
+          this.initializeFilterOptions(response.alerts);
+        }
         
         // Process distribution data for the selected variable
         const distributionKey = this.selectedDistributionVariable;
         if (response.metrics?.distribution_data && response.metrics.distribution_data[distributionKey]) {
-          console.log('Processing API distribution data for:', distributionKey);
           this.processDistributionData(response.metrics.distribution_data[distributionKey]);
         } else {
           // If no distribution data from API, generate it from alerts
-          console.log('No distribution data from API, generating from alerts');
           this.generateDistributionDataFromAlerts();
         }
         
-        // Process time series data
-        this.processTimeSeriesData(response.alerts);
+        // Process time series data - check if the API provided time_series data
+        if (response.time_series && response.time_series.length > 0) {
+          this.alertsTimeSeries = response.time_series;
+        } else {
+          // Fallback to processing from alerts
+          this.processTimeSeriesData(response.alerts);
+        }
         
         this.isLoading = false;
       },
@@ -150,6 +152,45 @@ export class DashboardComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+  
+  initializeFilterOptions(alerts: EventRecord[]): void {
+    // Extract unique values for each filter from the alerts
+    const sensorTypes = [...new Set(alerts.map(alert => alert.sensor_type))].filter(Boolean);
+    const industries = [...new Set(alerts.map(alert => alert.industry))].filter(Boolean);
+    const eventTypes = [...new Set(alerts.map(alert => alert.event_type))].filter(Boolean);
+    const resolutionReasons = [...new Set(alerts.map(alert => alert.resolution_reason))].filter(Boolean);
+    const deviceTypes = [...new Set(alerts.map(alert => alert.device_type))].filter(Boolean);
+    
+    // Group countries by continent (simplified example)
+    const allCountries = [...new Set(alerts.map(alert => alert.country))].filter(Boolean) as string[];
+    
+    // Simplified continent mapping - you may want to replace with actual continent data
+    const euCountries = allCountries.filter(country => 
+      ['United Kingdom', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 'Belgium', 
+       'Poland', 'Sweden', 'Austria', 'Denmark', 'Finland', 'Ireland', 'Portugal', 'Greece'].includes(country)
+    );
+    
+    const naCountries = allCountries.filter(country => 
+      ['United States', 'Canada', 'Mexico'].includes(country)
+    );
+    
+    const otherCountries = allCountries.filter(country => 
+      !euCountries.includes(country) && !naCountries.includes(country)
+    );
+    
+    this.filterOptions = {
+      sensorTypes: sensorTypes.sort(),
+      industries: industries.sort(),
+      eventTypes: eventTypes.sort(),
+      resolutionReasons: resolutionReasons.sort(),
+      deviceTypes: deviceTypes.sort(),
+      countries: {
+        'EU': euCountries.sort(),
+        'North America': naCountries.sort(),
+        'Other': otherCountries.sort()
+      }
+    };
   }
   
   updateFilters(filters: any): void {
@@ -162,14 +203,10 @@ export class DashboardComponent implements OnInit {
       return;
     }
     
-    console.log('Raw distribution data:', distributionData);
-    
     // Convert the distribution object from API to chart format
     this.distributionData = Object.entries(distributionData).map(([name, value]) => {
       return { name, value };
     });
-    
-    console.log('Transformed distribution data:', this.distributionData);
     
     // Sort by value descending for better visualization
     this.distributionData.sort((a, b) => b.value - a.value);
@@ -191,24 +228,12 @@ export class DashboardComponent implements OnInit {
         ];
       }
     }
-    
-    console.log('Final distribution data:', this.distributionData);
   }
   
-  // New method to generate distribution data from alerts if API doesn't provide it
+  // Generate distribution data from alerts if API doesn't provide it
   generateDistributionDataFromAlerts(): void {
     if (!this.alerts || this.alerts.length === 0) {
-      console.log('No alerts available to generate distribution data');
-      
-      // Create sample data if no alerts are available
-      this.distributionData = [
-        { name: 'CO', value: 3 },
-        { name: 'H2S', value: 2 },
-        { name: 'CO2', value: 4 },
-        { name: 'O2', value: 2 },
-        { name: 'LEL', value: 1 }
-      ];
-      
+      this.distributionData = [];
       return;
     }
     
@@ -224,35 +249,146 @@ export class DashboardComponent implements OnInit {
       }
     });
     
-    console.log('Generated distribution data:', countMap);
-    
     // Convert to expected format and sort
     this.distributionData = Object.entries(countMap)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
-    
-    console.log('Formatted distribution data:', this.distributionData);
+      
+    // Apply same consolidation logic for small groups
+    if (this.distributionData.length > 0) {
+      const largestValue = this.distributionData[0].value;
+      const threshold = largestValue * 0.1;
+      
+      const mainGroups = this.distributionData.filter(item => item.value >= threshold);
+      const smallGroups = this.distributionData.filter(item => item.value < threshold);
+      
+      if (smallGroups.length > 0) {
+        const otherValue = smallGroups.reduce((sum, item) => sum + item.value, 0);
+        
+        this.distributionData = [
+          ...mainGroups,
+          { name: 'Other', value: otherValue }
+        ];
+      }
+    }
   }
   
   processTimeSeriesData(alerts: EventRecord[]): void {
+    // Exit early if no alerts
+    if (!alerts || alerts.length === 0) {
+      this.alertsTimeSeries = [];
+      return;
+    }
+    
+    console.log('Processing time series data from', alerts.length, 'alerts');
+    
     // Group alerts by date and count them
     const dateGroups: Record<string, number> = {};
     
-    alerts.forEach(alert => {
-      // Extract date part only (YYYY-MM-DD) from the datetime string
-      const dateStr = alert.date_created.split(' ')[0];
+    // Get date range from filters or use alerts min/max dates
+    let startDate: Date, endDate: Date;
+    
+    if (this.appliedFilters.startDate && this.appliedFilters.endDate) {
+      startDate = new Date(this.appliedFilters.startDate);
+      endDate = new Date(this.appliedFilters.endDate);
+    } else {
+      // Find min and max dates from alerts
+      const dates = alerts.map(alert => {
+        try {
+          // Handle different date formats
+          const datePart = alert.date_created.split(' ')[0]; // Extract YYYY-MM-DD
+          return new Date(datePart);
+        } catch (e) {
+          console.error('Invalid date:', alert.date_created);
+          return null;
+        }
+      }).filter(date => date !== null && !isNaN(date.getTime())) as Date[];
       
-      if (!dateGroups[dateStr]) {
-        dateGroups[dateStr] = 0;
+      if (dates.length === 0) {
+        this.alertsTimeSeries = [];
+        return;
       }
       
-      dateGroups[dateStr]++;
+      startDate = new Date(Math.min(...dates.map(d => d.getTime())));
+      endDate = new Date(Math.max(...dates.map(d => d.getTime())));
+    }
+    
+    console.log('Date range:', startDate, 'to', endDate);
+    
+    // Generate all dates in the range for consistent data
+    const allDates: string[] = [];
+    const currentDate = new Date(startDate);
+    currentDate.setHours(0, 0, 0, 0);
+    
+    const lastDate = new Date(endDate);
+    lastDate.setHours(0, 0, 0, 0);
+    
+    // Initialize all dates with zero count
+    while (currentDate <= lastDate) {
+      const dateStr = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+      dateGroups[dateStr] = 0;
+      allDates.push(dateStr);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    // Count alerts by date
+    alerts.forEach(alert => {
+      try {
+        // Extract date part from the date_created field
+        const alertDateParts = alert.date_created.split(' ');
+        const dateStr = alertDateParts[0]; // Extract YYYY-MM-DD
+        
+        if (dateGroups[dateStr] !== undefined) {
+          dateGroups[dateStr]++;
+        } else {
+          // Find closest date if the exact date is not in our range
+          const closestDate = this.findClosestDate(dateStr, allDates);
+          if (closestDate) {
+            dateGroups[closestDate]++;
+          }
+        }
+      } catch (e) {
+        console.error('Error processing alert date:', alert.date_created, e);
+      }
     });
     
     // Convert to chart format and sort by date
     this.alertsTimeSeries = Object.entries(dateGroups)
       .map(([date, value]) => ({ date, value }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    console.log('Time series data processed:', this.alertsTimeSeries.length, 'data points');
+  }
+
+  // Helper method to find closest date
+  findClosestDate(targetDateStr: string, dates: string[]): string | undefined {
+    if (!targetDateStr || dates.length === 0) return undefined;
+    
+    // Try direct match first
+    if (dates.includes(targetDateStr)) {
+      return targetDateStr;
+    }
+    
+    try {
+      const targetDate = new Date(targetDateStr);
+      let closestDate = dates[0];
+      let smallestDiff = Math.abs(targetDate.getTime() - new Date(dates[0]).getTime());
+      
+      for (let i = 1; i < dates.length; i++) {
+        const currentDate = new Date(dates[i]);
+        const diff = Math.abs(targetDate.getTime() - currentDate.getTime());
+        
+        if (diff < smallestDiff) {
+          smallestDiff = diff;
+          closestDate = dates[i];
+        }
+      }
+      
+      return closestDate;
+    } catch (e) {
+      console.error("Error finding closest date:", e);
+      return dates[0]; // Fallback to first date
+    }
   }
   
   applyFilters(filters: any): void {
@@ -264,7 +400,11 @@ export class DashboardComponent implements OnInit {
   }
   
   resetFilters(): void {
-    // Reset to empty filters without date range defaults
+    // Reset to empty filters with default date range
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
     this.appliedFilters = {
       sensorTypes: [],
       industries: [],
@@ -273,18 +413,16 @@ export class DashboardComponent implements OnInit {
       deviceTypes: [],
       countries: [],
       continents: [],
-      startDate: '',
-      endDate: ''
+      startDate: this.formatDate(thirtyDaysAgo),
+      endDate: this.formatDate(today)
     };
     
     this.loadData();
   }
   
   changeDistributionVariable(): void {
-    console.log('Distribution variable changed to:', this.selectedDistributionVariable);
-    if (this.dashboardDataService) {
-      this.loadData();
-    }
+    // Either load data from API again or regenerate from existing alerts
+    this.generateDistributionDataFromAlerts();
   }
   
   changeGroupingVariable(): void {

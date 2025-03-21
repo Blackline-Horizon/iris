@@ -1,3 +1,4 @@
+// /Users/shanzi/iris/iris/src/app/components/dashboard/dashboard-filters/dashboard-filters.component.ts
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -69,8 +70,11 @@ export class DashboardFiltersComponent implements OnInit {
   constructor() {}
   
   ngOnInit(): void {
-    // Do not pre-select all continents and countries by default
+    // Initialize available countries based on selected continents
     this.updateAvailableCountries();
+    
+    // Open first filter group by default to improve UX
+    this.isFilterGroupOpen['sensorType'] = true;
   }
   
   toggleFilterGroup(group: string): void {
@@ -79,42 +83,44 @@ export class DashboardFiltersComponent implements OnInit {
   
   // Helpers for HTML template
   isInFilterArray(arrayName: string, value: string): boolean {
-    return this._appliedFilters[arrayName].includes(value);
+    return Array.isArray(this._appliedFilters[arrayName]) && 
+           this._appliedFilters[arrayName].includes(value);
   }
 
   toggleAllSensorTypes(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.toggleAllOptions('sensorTypes', target.checked);
+    event.preventDefault(); // Prevent event bubbling
+    const shouldSelect = !this.areAllSelected('sensorTypes');
+    this.toggleAllOptions('sensorTypes', shouldSelect);
   }
 
   toggleAllIndustries(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.toggleAllOptions('industries', target.checked);
+    event.preventDefault(); // Prevent event bubbling
+    const shouldSelect = !this.areAllSelected('industries');
+    this.toggleAllOptions('industries', shouldSelect);
   }
 
   toggleAllEventTypes(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.toggleAllOptions('eventTypes', target.checked);
+    event.preventDefault(); // Prevent event bubbling
+    const shouldSelect = !this.areAllSelected('eventTypes');
+    this.toggleAllOptions('eventTypes', shouldSelect);
   }
 
   toggleAllResolutionReasons(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.toggleAllOptions('resolutionReasons', target.checked);
+    event.preventDefault(); // Prevent event bubbling
+    const shouldSelect = !this.areAllSelected('resolutionReasons');
+    this.toggleAllOptions('resolutionReasons', shouldSelect);
   }
 
   toggleAllDeviceTypes(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.toggleAllOptions('deviceTypes', target.checked);
-  }
-
-  toggleAllContinents(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.toggleAllOptions('continents', target.checked);
+    event.preventDefault(); // Prevent event bubbling
+    const shouldSelect = !this.areAllSelected('deviceTypes');
+    this.toggleAllOptions('deviceTypes', shouldSelect);
   }
 
   toggleAllCountries(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.toggleAllOptions('countries', target.checked);
+    event.preventDefault(); // Prevent event bubbling
+    const shouldSelect = !this.areAllSelected('countries');
+    this.toggleAllOptions('countries', shouldSelect);
   }
   
   toggleAllOptions(field: string, selected: boolean): void {
@@ -149,8 +155,7 @@ export class DashboardFiltersComponent implements OnInit {
   }
   
   toggleContinent(continent: string, event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const isChecked = target.checked;
+    const isChecked = (event.target as HTMLInputElement).checked;
     
     if (isChecked) {
       if (!this.selectedContinents.includes(continent)) {
@@ -184,17 +189,21 @@ export class DashboardFiltersComponent implements OnInit {
     
     this.availableCountries = [];
     
-    if (this.selectedContinents.includes('EU')) {
+    if (this.selectedContinents.includes('EU') && Array.isArray(this.filterOptions.countries.EU)) {
       this.availableCountries = [...this.availableCountries, ...this.filterOptions.countries.EU];
     }
     
-    if (this.selectedContinents.includes('North America')) {
+    if (this.selectedContinents.includes('North America') && 
+        Array.isArray(this.filterOptions.countries['North America'])) {
       this.availableCountries = [...this.availableCountries, ...this.filterOptions.countries['North America']];
     }
     
-    if (this.selectedContinents.includes('Other')) {
+    if (this.selectedContinents.includes('Other') && Array.isArray(this.filterOptions.countries.Other)) {
       this.availableCountries = [...this.availableCountries, ...this.filterOptions.countries.Other];
     }
+    
+    // Remove duplicates
+    this.availableCountries = [...new Set(this.availableCountries)];
   }
   
   applyFilters(): void {
@@ -224,25 +233,46 @@ export class DashboardFiltersComponent implements OnInit {
     
     switch(field) {
       case 'sensorTypes':
-        return this._appliedFilters.sensorTypes.length === this.filterOptions.sensorTypes.length;
+        return Array.isArray(this._appliedFilters.sensorTypes) && 
+               Array.isArray(this.filterOptions.sensorTypes) && 
+               this._appliedFilters.sensorTypes.length === this.filterOptions.sensorTypes.length &&
+               this.filterOptions.sensorTypes.length > 0;
       case 'industries':
-        return this._appliedFilters.industries.length === this.filterOptions.industries.length;
+        return Array.isArray(this._appliedFilters.industries) && 
+               Array.isArray(this.filterOptions.industries) && 
+               this._appliedFilters.industries.length === this.filterOptions.industries.length &&
+               this.filterOptions.industries.length > 0;
       case 'eventTypes':
-        return this._appliedFilters.eventTypes.length === this.filterOptions.eventTypes.length;
+        return Array.isArray(this._appliedFilters.eventTypes) && 
+               Array.isArray(this.filterOptions.eventTypes) && 
+               this._appliedFilters.eventTypes.length === this.filterOptions.eventTypes.length &&
+               this.filterOptions.eventTypes.length > 0;
       case 'resolutionReasons':
-        return this._appliedFilters.resolutionReasons.length === this.filterOptions.resolutionReasons.length;
+        return Array.isArray(this._appliedFilters.resolutionReasons) && 
+               Array.isArray(this.filterOptions.resolutionReasons) && 
+               this._appliedFilters.resolutionReasons.length === this.filterOptions.resolutionReasons.length &&
+               this.filterOptions.resolutionReasons.length > 0;
       case 'deviceTypes':
-        return this._appliedFilters.deviceTypes.length === this.filterOptions.deviceTypes.length;
+        return Array.isArray(this._appliedFilters.deviceTypes) && 
+               Array.isArray(this.filterOptions.deviceTypes) && 
+               this._appliedFilters.deviceTypes.length === this.filterOptions.deviceTypes.length &&
+               this.filterOptions.deviceTypes.length > 0;
       case 'continents':
         return this.selectedContinents.length === 3; // EU, NA, Other
       case 'countries':
-        return this._appliedFilters.countries.length === this.availableCountries.length && this.availableCountries.length > 0;
+        return Array.isArray(this._appliedFilters.countries) && 
+               this._appliedFilters.countries.length === this.availableCountries.length && 
+               this.availableCountries.length > 0;
       default:
         return false;
     }
   }
 
   toggleOption(array: string[], item: string): void {
+    if (!Array.isArray(array)) {
+      array = [];
+    }
+    
     const index = array.indexOf(item);
     if (index === -1) {
       array.push(item);

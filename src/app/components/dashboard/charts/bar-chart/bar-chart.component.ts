@@ -1,4 +1,3 @@
-// /Users/shanzi/iris/iris/src/app/components/dashboard/charts/bar-chart/bar-chart.component.ts
 import { Component, Input, OnInit, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import Chart from 'chart.js/auto';
@@ -13,8 +12,6 @@ import Chart from 'chart.js/auto';
 export class BarChartComponent implements OnInit, OnChanges {
   @Input() data: { name: string, value: number }[] = [];
   @Input() title: string = '';
-  @Input() xAxisLabel: string = '';
-  @Input() yAxisLabel: string = 'Count';
   
   @ViewChild('barCanvas', { static: true }) barCanvas!: ElementRef;
   private chart: Chart | null = null;
@@ -36,32 +33,37 @@ export class BarChartComponent implements OnInit, OnChanges {
       this.chart.destroy();
     }
     
-    // Prepare the data
-    const labels = this.data.map(item => this.formatLabel(item.name));
+    const labels = this.data.map(item => item.name);
     const values = this.data.map(item => item.value);
     
-    // Generate colors
-    const colors = this.generateColors(this.data.length);
+    // Generate colors based on the number of items
+    const backgroundColors = this.generateColors(this.data.length);
     
-    // Create the chart
     this.chart = new Chart(this.barCanvas.nativeElement, {
       type: 'bar',
       data: {
         labels: labels,
         datasets: [{
+          label: 'Count',
           data: values,
-          backgroundColor: colors,
-          borderColor: colors.map(color => this.adjustBrightness(color, -20)),
+          backgroundColor: backgroundColors,
+          borderColor: backgroundColors.map(color => this.adjustColorBrightness(color, -15)),
           borderWidth: 1,
           borderRadius: 4,
-          maxBarThickness: 50,
-          barPercentage: 0.8,
-          hoverBackgroundColor: colors.map(color => this.adjustBrightness(color, 20))
+          barPercentage: 0.7,
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: {
+            left: 10,
+            right: 20,
+            top: 20,
+            bottom: 40
+          }
+        },
         plugins: {
           legend: {
             display: false
@@ -77,12 +79,23 @@ export class BarChartComponent implements OnInit, OnChanges {
             },
             padding: 12,
             cornerRadius: 6,
-            displayColors: false,
+            displayColors: true,
             borderColor: 'rgba(255, 255, 255, 0.1)',
             borderWidth: 1,
             callbacks: {
               label: (context) => {
-                return `${context.dataset.data[context.dataIndex]}`;
+                const value = context.raw as number;
+                // Calculate total more carefully to avoid type errors
+                const dataArray = context.chart.data.datasets[0].data;
+                let total = 0;
+                for (let i = 0; i < dataArray.length; i++) {
+                  const val = dataArray[i];
+                  if (typeof val === 'number') {
+                    total += val;
+                  }
+                }
+                const percentage = Math.round((value / total) * 100);
+                return `${value} (${percentage}%)`;
               }
             }
           },
@@ -101,31 +114,6 @@ export class BarChartComponent implements OnInit, OnChanges {
           }
         },
         scales: {
-          x: {
-            grid: {
-              color: 'rgba(255, 255, 255, 0.05)',
-              display: false
-            },
-            ticks: {
-              color: '#aaa',
-              font: {
-                size: 11
-              },
-              maxRotation: 45,
-              minRotation: 45
-            },
-            title: {
-              display: this.xAxisLabel !== '',
-              text: this.xAxisLabel,
-              color: '#aaa',
-              font: {
-                size: 12
-              },
-              padding: {
-                top: 10
-              }
-            }
-          },
           y: {
             beginAtZero: true,
             grid: {
@@ -138,16 +126,23 @@ export class BarChartComponent implements OnInit, OnChanges {
               },
               padding: 8,
               precision: 0
+            }
+          },
+          x: {
+            grid: {
+              display: false
             },
-            title: {
-              display: this.yAxisLabel !== '',
-              text: this.yAxisLabel,
+            ticks: {
               color: '#aaa',
               font: {
-                size: 12
+                size: 11
               },
-              padding: {
-                bottom: 10
+              padding: 8,
+              maxRotation: 45,
+              minRotation: 45,
+              callback: function(value, index, values) {
+                const label = this.getLabelForValue(value as number);
+                return label.length > 15 ? label.slice(0, 12) + '...' : label;
               }
             }
           }
@@ -155,38 +150,16 @@ export class BarChartComponent implements OnInit, OnChanges {
         animation: {
           duration: 1000,
           easing: 'easeOutQuart'
-        },
-        layout: {
-          padding: {
-            left: 10,
-            right: 10,
-            top: 0,
-            bottom: 10
-          }
         }
       }
     });
   }
   
-  private formatLabel(name: string): string {
-    // Format name for better display
-    if (!name) return 'Unknown';
-    
-    // Replace underscores with spaces
-    let formatted = name.replace(/_/g, ' ');
-    
-    // Capitalize each word
-    formatted = formatted.split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-    
-    return formatted;
-  }
-  
+  // Generate a color palette based on the number of items
   private generateColors(count: number): string[] {
     const baseColors = [
-      '#e74c3c', // Red
       '#3498db', // Blue
+      '#e74c3c', // Red
       '#2ecc71', // Green
       '#f39c12', // Orange
       '#9b59b6', // Purple
@@ -197,83 +170,42 @@ export class BarChartComponent implements OnInit, OnChanges {
       '#d35400'  // Dark Red
     ];
     
-    // If count <= baseColors.length, return the first 'count' baseColors
     if (count <= baseColors.length) {
       return baseColors.slice(0, count);
     }
     
-    // Otherwise, generate variations
-    const colors: string[] = [...baseColors];
-    
-    while (colors.length < count) {
-      const randomIndex = Math.floor(Math.random() * baseColors.length);
-      const baseColor = baseColors[randomIndex];
-      
-      // Create a variation with saturation and lightness changes
-      const variation = this.createColorVariation(baseColor);
+    // For more items, generate variations of the base colors
+    const colors: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const baseColor = baseColors[i % baseColors.length];
+      const variation = i < baseColors.length ? 
+        baseColor : this.adjustColorBrightness(baseColor, (i % 3 - 1) * 15);
       colors.push(variation);
     }
     
     return colors;
   }
   
-  private createColorVariation(hexColor: string): string {
-    // Convert hex to HSL
-    const r = parseInt(hexColor.slice(1, 3), 16) / 255;
-    const g = parseInt(hexColor.slice(3, 5), 16) / 255;
-    const b = parseInt(hexColor.slice(5, 7), 16) / 255;
+  // Adjust color brightness
+  private adjustColorBrightness(hex: string, percent: number): string {
+    hex = hex.replace(/^\s*#|\s*$/g, '');
     
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-    
-    if (max === min) {
-      h = s = 0; // achromatic
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      
-      switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
-        default: h = 0;
-      }
-      
-      h /= 6;
+    // Convert 3 digit hex to 6 digits
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
     }
     
-    // Create variation
-    h = Math.round(h * 360);
-    s = Math.round(s * 100);
-    l = Math.round(l * 100);
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
     
-    // Adjust hue slightly
-    h = (h + Math.floor(Math.random() * 20) - 10) % 360;
-    if (h < 0) h += 360;
+    const adjustValue = (value: number): number => {
+      const adjusted = value + Math.round(percent / 100 * 255);
+      return Math.max(0, Math.min(255, adjusted));
+    };
     
-    // Adjust saturation and lightness
-    s = Math.max(40, Math.min(90, s + Math.floor(Math.random() * 20) - 10));
-    l = Math.max(30, Math.min(70, l + Math.floor(Math.random() * 20) - 10));
-    
-    return `hsl(${h}, ${s}%, ${l}%)`;
-  }
-  
-  private adjustBrightness(color: string, amount: number): string {
-    // Simple brightness adjustment for HSL colors
-    if (color.startsWith('hsl')) {
-      const regex = /hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/;
-      const matches = regex.exec(color);
-      
-      if (matches && matches.length === 4) {
-        const h = parseInt(matches[1], 10);
-        const s = parseInt(matches[2], 10);
-        const l = parseInt(matches[3], 10);
-        
-        return `hsl(${h}, ${s}%, ${Math.max(0, Math.min(100, l + amount))}%)`;
-      }
-    }
-    
-    return color;
+    return "#" + 
+      ((1 << 24) + (adjustValue(r) << 16) + (adjustValue(g) << 8) + adjustValue(b))
+      .toString(16).slice(1);
   }
 }

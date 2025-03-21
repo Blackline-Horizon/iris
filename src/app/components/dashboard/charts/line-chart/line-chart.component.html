@@ -1,10 +1,10 @@
-<!-- /Users/shanzi/iris/iris/src/app/components/dashboard/charts/line-chart/line-chart.component.html-->
 <div class="chart-container">
-    <canvas #lineCanvas></canvas>
-    <div class="no-data-overlay" *ngIf="!data || data.length === 0">
-      <div class="no-data-message">
-        <i class="fas fa-chart-line"></i>
-        <p>No time series data available</p>
-      </div>
+  <canvas #lineCanvas></canvas>
+  
+  <div class="no-data-overlay" *ngIf="!data || data.length === 0">
+    <div class="no-data-message">
+      <i class="fas fa-chart-line"></i>
+      <span>No data available for the selected period</span>
     </div>
   </div>
+</div>

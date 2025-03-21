@@ -1,159 +1,160 @@
+<!-- /Users/shanzi/iris/iris/src/app/components/dashboard/dashboard.component.html-->
 <!-- Dashboard Main Container (adjusted to stay right of sidebar) -->
 <div class="analytics-dashboard">
-    <!-- Main Content -->
-    <main class="dashboard-content">
-      <!-- Dashboard Header with Title -->
-      <div class="dashboard-header">
-        <h1 class="dashboard-title">Global Analytics Dashboard</h1>
-        <div class="filter-summary" *ngIf="hasActiveFilters()">
-          <span class="filter-badge">{{ getActiveFiltersCount() }} active filters</span>
-        </div>
+  <!-- Main Content -->
+  <main class="dashboard-content">
+    <!-- Dashboard Header with Title -->
+    <div class="dashboard-header">
+      <h1 class="dashboard-title">Global Analytics Dashboard</h1>
+      <div class="filter-summary" *ngIf="hasActiveFilters()">
+        <span class="filter-badge">{{ getActiveFiltersCount() }} active filters</span>
       </div>
-  
-      <!-- Dashboard Main Area -->
-      <div class="dashboard-main">
-        <!-- Loading State -->
-        <div class="loading-overlay" *ngIf="isLoading">
-          <div class="spinner"></div>
-          <p>Loading data...</p>
+    </div>
+
+    <!-- Dashboard Main Area -->
+    <div class="dashboard-main">
+      <!-- Loading State -->
+      <div class="loading-overlay" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Loading data...</p>
+      </div>
+      
+      <!-- Error State -->
+      <div class="error-container" *ngIf="error">
+        <div class="error-icon">
+          <i class="fas fa-exclamation-triangle"></i>
         </div>
-        
-        <!-- Error State -->
-        <div class="error-container" *ngIf="error">
-          <div class="error-icon">
-            <i class="fas fa-exclamation-triangle"></i>
+        <p class="error-message">{{ error }}</p>
+        <button class="retry-btn" (click)="loadData()">Retry</button>
+      </div>
+      
+      <!-- Dashboard Content -->
+      <div class="dashboard-view" *ngIf="!isLoading && !error">
+        <!-- Metrics Row with Filter -->
+        <div class="metrics-filter-row">
+          <div class="metrics-container">
+            <app-metric-card
+              icon="fa-chart-bar"
+              [value]="totalAlerts"
+              label="Total Alerts"
+              class="animate-in"
+            ></app-metric-card>
+            
+            <app-metric-card
+              icon="fa-calendar-day"
+              [value]="getFormattedAvgAlerts()"
+              label="Average Alerts Per Day"
+              class="animate-in"
+            ></app-metric-card>
           </div>
-          <p class="error-message">{{ error }}</p>
-          <button class="retry-btn" (click)="loadData()">Retry</button>
-        </div>
-        
-        <!-- Dashboard Content -->
-        <div class="dashboard-view" *ngIf="!isLoading && !error">
-          <!-- Metrics Row with Filter -->
-          <div class="metrics-filter-row">
-            <div class="metrics-container">
-              <app-metric-card
-                icon="fa-chart-bar"
-                [value]="totalAlerts"
-                label="Total Alerts"
-                class="animate-in"
-              ></app-metric-card>
+          
+          <!-- Floating Filter Panel -->
+          <div class="floating-filter-panel" [ngClass]="{'open': isFilterPanelOpen}">
+            <div class="filter-buttons">
+              <button class="filter-toggle-button" (click)="toggleFilterPanel()">
+                <i class="fas" [ngClass]="isFilterPanelOpen ? 'fa-times' : 'fa-filter'"></i>
+                <span>{{ isFilterPanelOpen ? 'Close' : 'Filters' }}</span>
+              </button>
               
-              <app-metric-card
-                icon="fa-calendar-day"
-                [value]="getFormattedAvgAlerts()"
-                label="Average Alerts Per Day"
-                class="animate-in"
-              ></app-metric-card>
+              <button class="reset-all-button" (click)="resetFilters()">
+                <i class="fas fa-undo-alt"></i>
+                <span>Reset All</span>
+              </button>
             </div>
             
-            <!-- Floating Filter Panel -->
-            <div class="floating-filter-panel" [ngClass]="{'open': isFilterPanelOpen}">
-              <div class="filter-buttons">
-                <button class="filter-toggle-button" (click)="toggleFilterPanel()">
-                  <i class="fas" [ngClass]="isFilterPanelOpen ? 'fa-times' : 'fa-filter'"></i>
-                  <span>{{ isFilterPanelOpen ? 'Close' : 'Filters' }}</span>
-                </button>
-                
-                <button class="reset-all-button" (click)="resetFilters()">
-                  <i class="fas fa-undo-alt"></i>
-                  <span>Reset All</span>
-                </button>
+            <div class="compact-filter-content" *ngIf="isFilterPanelOpen">
+              <app-dashboard-filters
+                [filterOptions]="filterOptions"
+                [appliedFilters]="appliedFilters"
+                [compact]="true"
+                [hideResetButton]="true"
+                (filtersChanged)="updateFilters($event)"
+                (applyFilterClicked)="applyFilters($event)"
+              ></app-dashboard-filters>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Charts Section - Vertical Layout -->
+        <div class="charts-section">
+          <!-- Line Chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="card-title">
+                <i class="fas fa-chart-line"></i>
+                Alerts Over Time
+              </h3>
+              <div class="chart-controls">
+                <label for="groupBy">Group By:</label>
+                <select 
+                  id="groupBy" 
+                  [(ngModel)]="selectedGroupingVariable" 
+                  (change)="changeGroupingVariable()"
+                  class="select-control"
+                >
+                  <option value="none">None</option>
+                  <option value="resolution_reason">Resolution Reason</option>
+                  <option value="industry">Industry</option>
+                  <option value="event_type">Event Type</option>
+                  <option value="sensor_type">Sensor Type</option>
+                  <option value="device_type">Device Type</option>
+                </select>
               </div>
-              
-              <div class="compact-filter-content" *ngIf="isFilterPanelOpen">
-                <app-dashboard-filters
-                  [filterOptions]="filterOptions"
-                  [appliedFilters]="appliedFilters"
-                  [compact]="true"
-                  [hideResetButton]="true"
-                  (filtersChanged)="updateFilters($event)"
-                  (applyFilterClicked)="applyFilters($event)"
-                ></app-dashboard-filters>
-              </div>
+            </div>
+            <div class="chart-body">
+              <app-line-chart
+                [data]="alertsTimeSeries"
+                [groupBy]="selectedGroupingVariable !== 'none' ? selectedGroupingVariable : null"
+                [alerts]="alerts"
+                class="chart"
+              ></app-line-chart>
+            </div>
+            <div class="chart-footer" *ngIf="alerts.length > 0">
+              <span class="data-point">Date Range: {{ getDateRangeText() }}</span>
+              <span class="data-point">Data Points: {{ alertsTimeSeries.length }}</span>
             </div>
           </div>
           
-          <!-- Charts Section - Vertical Layout -->
-          <div class="charts-section">
-            <!-- Line Chart -->
-            <div class="chart-card">
-              <div class="chart-header">
-                <h3 class="card-title">
-                  <i class="fas fa-chart-line"></i>
-                  Alerts Over Time
-                </h3>
-                <div class="chart-controls">
-                  <label for="groupBy">Group By:</label>
-                  <select 
-                    id="groupBy" 
-                    [(ngModel)]="selectedGroupingVariable" 
-                    (change)="changeGroupingVariable()"
-                    class="select-control"
-                  >
-                    <option value="none">None</option>
-                    <option value="resolution_reason">Resolution Reason</option>
-                    <option value="industry">Industry</option>
-                    <option value="event_type">Event Type</option>
-                    <option value="sensor_type">Sensor Type</option>
-                    <option value="device_type">Device Type</option>
-                  </select>
-                </div>
-              </div>
-              <div class="chart-body">
-                <app-line-chart
-                  [data]="alertsTimeSeries"
-                  [groupBy]="selectedGroupingVariable !== 'none' ? selectedGroupingVariable : null"
-                  [alerts]="alerts"
-                  class="chart"
-                ></app-line-chart>
-              </div>
-              <div class="chart-footer" *ngIf="alerts.length > 0">
-                <span class="data-point">Date Range: {{ getDateRangeText() }}</span>
-                <span class="data-point">Data Points: {{ alertsTimeSeries.length }}</span>
+          <!-- Bar Chart - Below Time Series Chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="card-title">
+                <i class="fas fa-chart-bar"></i>
+                Distribution Analysis
+              </h3>
+              <div class="chart-controls">
+                <label for="distributionVar">Variable:</label>
+                <select 
+                  id="distributionVar" 
+                  [(ngModel)]="selectedDistributionVariable" 
+                  (change)="changeDistributionVariable()"
+                  class="select-control"
+                >
+                  <option value="sensor_type">Sensor Type</option>
+                  <option value="resolution_reason">Resolution Reason</option>
+                  <option value="device_type">Device Type</option>
+                  <option value="industry">Industry</option>
+                  <option value="event_type">Event Type</option>
+                </select>
               </div>
             </div>
-            
-            <!-- Bar Chart - Below Time Series Chart -->
-            <div class="chart-card">
-              <div class="chart-header">
-                <h3 class="card-title">
-                  <i class="fas fa-chart-bar"></i>
-                  Distribution Analysis
-                </h3>
-                <div class="chart-controls">
-                  <label for="distributionVar">Variable:</label>
-                  <select 
-                    id="distributionVar" 
-                    [(ngModel)]="selectedDistributionVariable" 
-                    (change)="changeDistributionVariable()"
-                    class="select-control"
-                  >
-                    <option value="sensor_type">Sensor Type</option>
-                    <option value="resolution_reason">Resolution Reason</option>
-                    <option value="device_type">Device Type</option>
-                    <option value="industry">Industry</option>
-                    <option value="event_type">Event Type</option>
-                  </select>
-                </div>
-              </div>
-              <div class="chart-body">
-                <app-bar-chart
-                  [data]="distributionData"
-                  [title]="getDistributionTitle()"
-                  class="chart"
-                ></app-bar-chart>
-              </div>
-              <div class="chart-footer" *ngIf="distributionData.length > 0">
-                <span class="data-point">Categories: {{ distributionData.length }}</span>
-                <span class="data-point" *ngIf="distributionData.length > 0 && getTotalDistributionValue() > 0">
-                  Top Category: {{ distributionData[0] ? distributionData[0].name : 'None' }} 
-                  ({{ getTopCategoryPercentage() }}%)
-                </span>
-              </div>
+            <div class="chart-body">
+              <app-bar-chart
+                [data]="distributionData"
+                [title]="getDistributionTitle()"
+                class="chart"
+              ></app-bar-chart>
+            </div>
+            <div class="chart-footer" *ngIf="distributionData.length > 0">
+              <span class="data-point">Categories: {{ distributionData.length }}</span>
+              <span class="data-point" *ngIf="distributionData.length > 0 && getTotalDistributionValue() > 0">
+                Top Category: {{ distributionData[0] ? distributionData[0].name : 'None' }} 
+                ({{ getTopCategoryPercentage() }}%)
+              </span>
             </div>
           </div>
         </div>
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
+</div>
