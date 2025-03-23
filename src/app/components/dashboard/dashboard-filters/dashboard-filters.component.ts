@@ -75,6 +75,11 @@ export class DashboardFiltersComponent implements OnInit {
     
     // Open first filter group by default to improve UX
     this.isFilterGroupOpen['sensorType'] = true;
+    
+    // For map component, also open date range filter by default
+    if (this.dashboardType === 'map') {
+      this.isFilterGroupOpen['dateRange'] = true;
+    }
   }
   
   toggleFilterGroup(group: string): void {
@@ -213,6 +218,14 @@ export class DashboardFiltersComponent implements OnInit {
   }
   
   resetFilters(): void {
+    // Set default date range - last 14 days
+    const today = new Date();
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(today.getDate() - 14);
+    
+    const startDate = this.formatDate(fourteenDaysAgo);
+    const endDate = this.formatDate(today);
+    
     this._appliedFilters = {
       sensorTypes: [],
       industries: [],
@@ -220,12 +233,17 @@ export class DashboardFiltersComponent implements OnInit {
       resolutionReasons: [],
       deviceTypes: [],
       countries: [],
-      startDate: '',
-      endDate: ''
+      startDate: startDate,
+      endDate: endDate
     };
     this.selectedContinents = [];
     this.updateAvailableCountries();
     this.resetFiltersClicked.emit();
+  }
+  
+  // Helper function to format date
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
   
   areAllSelected(field: string): boolean {

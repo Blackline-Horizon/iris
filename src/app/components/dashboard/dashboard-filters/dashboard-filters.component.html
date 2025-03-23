@@ -224,7 +224,7 @@
     </div>
   
     <!-- Date Range Filter -->
-    <div class="filter-group" *ngIf="dashboardType !== 'map'">
+    <div class="filter-group">
       <div class="filter-header" (click)="toggleFilterGroup('dateRange')">
         <h3>Date Range</h3>
         <i class="fas" [ngClass]="isFilterGroupOpen['dateRange'] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
@@ -254,21 +254,6 @@
     </div>
   </div>
   
-  <!-- Filter Actions -->
-  <div class="filter-actions">
-    <button 
-      class="apply-btn" 
-      (click)="applyFilters()"
-    >
-      Apply Filters
-    </button>
-    
-    <button 
-      class="reset-btn" 
-      (click)="resetFilters()"
-      *ngIf="!hideResetButton"
-    >
-      Reset All
-    </button>
-  </div>
+  <!-- Filter Actions - REMOVED to avoid duplicate buttons -->
+  <!-- This is where the "Apply Filters" button was before -->
 </div>

@@ -1,4 +1,3 @@
-<!-- /Users/shanzi/iris/iris/src/app/components/dashboard/dashboard.component.html-->
 <!-- Dashboard Main Container (adjusted to stay right of sidebar) -->
 <div class="analytics-dashboard">
   <!-- Main Content -->
@@ -8,6 +7,7 @@
       <h1 class="dashboard-title">Global Analytics Dashboard</h1>
       <div class="filter-summary" *ngIf="hasActiveFilters()">
         <span class="filter-badge">{{ getActiveFiltersCount() }} active filters</span>
+        <span class="date-badge">{{ getDateRangeText() }}</span>
       </div>
     </div>
 
@@ -48,8 +48,8 @@
             ></app-metric-card>
           </div>
           
-          <!-- Floating Filter Panel -->
-          <div class="floating-filter-panel" [ngClass]="{'open': isFilterPanelOpen}">
+          <!-- Floating Filter Panel - Now using Map's style -->
+          <div class="floating-filter-panel">
             <div class="filter-buttons">
               <button class="filter-toggle-button" (click)="toggleFilterPanel()">
                 <i class="fas" [ngClass]="isFilterPanelOpen ? 'fa-times' : 'fa-filter'"></i>
@@ -61,16 +61,31 @@
                 <span>Reset All</span>
               </button>
             </div>
+          </div>
+          
+          <!-- Filter Panel - Now using Map's full-screen style -->
+          <div class="compact-filter-content" *ngIf="isFilterPanelOpen">
+            <h2 style="color: #3498db; margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+              <i class="fas fa-filter" style="margin-right: 8px;"></i>Filter Options
+            </h2>
+            <app-dashboard-filters
+              [filterOptions]="filterOptions"
+              [appliedFilters]="appliedFilters"
+              [compact]="true"
+              [hideResetButton]="true"
+              (filtersChanged)="updateFilters($event)"
+              (applyFilterClicked)="applyFilters($event)"
+            ></app-dashboard-filters>
             
-            <div class="compact-filter-content" *ngIf="isFilterPanelOpen">
-              <app-dashboard-filters
-                [filterOptions]="filterOptions"
-                [appliedFilters]="appliedFilters"
-                [compact]="true"
-                [hideResetButton]="true"
-                (filtersChanged)="updateFilters($event)"
-                (applyFilterClicked)="applyFilters($event)"
-              ></app-dashboard-filters>
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+              <button class="filter-toggle-button" style="background-color: #7f8c8d;" (click)="toggleFilterPanel()">
+                <i class="fas fa-times"></i>
+                <span>Cancel</span>
+              </button>
+              <button class="filter-toggle-button" (click)="applyFilters(appliedFilters)">
+                <i class="fas fa-check"></i>
+                <span>Apply Filters</span>
+              </button>
             </div>
           </div>
         </div>

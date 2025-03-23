@@ -463,11 +463,9 @@ export class DashboardComponent implements OnInit {
     if (!this.appliedFilters.startDate || !this.appliedFilters.endDate) {
       return 'All time';
     }
-
-    const startDate = new Date(this.appliedFilters.startDate);
-    const endDate = new Date(this.appliedFilters.endDate);
-    
-    return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+  
+    // Use the exact date strings from the filter without timezone conversion
+    return `${this.appliedFilters.startDate} - ${this.appliedFilters.endDate}`;
   }
 
   hasActiveFilters(): boolean {
