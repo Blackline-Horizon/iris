@@ -1,3 +1,4 @@
+// src/app/components/map/map.component.ts
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy, HostListener, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,7 +27,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   // Map properties
   private map!: L.Map;
   private markers: L.CircleMarker[] = [];
-  private markerLayer!: L.MarkerClusterGroup;
+  private markerLayer: any; // MarkerClusterGroup
   private mapInitialized: boolean = false;
   private mapUpdateTimer: any = null;
   
@@ -42,7 +43,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   loadingProgress: number = 0;
   error: string | null = null;
   markersDisplayed: number = 0;
-  showAllMarkers: boolean = false;
+  totalAlertsWithLocation: number = 0;
+  usingClusters: boolean = true;
   
   // Filter state
   appliedFilters: any = {
@@ -56,25 +58,28 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   
   // Metrics
   totalAlerts: number = 0;
-  totalAlertsWithLocation: number = 0;
   uniqueLocations: number = 0;
   uniqueCountries: number = 0;
   
-  // 限制最大标记数量以提高性能
-  private readonly MAX_VISIBLE_MARKERS = 500;
-  
   // Marker colors for different sensor types
   private sensorTypeColors: Record<string, string> = {
-    'temperature_sensor': '#e74c3c',   // Red
-    'humidity_sensor': '#3498db',      // Blue
-    'pressure_sensor': '#2ecc71',      // Green
-    'gas_sensor': '#f39c12',           // Orange
-    'motion_sensor': '#9b59b6',        // Purple
-    'proximity_sensor': '#1abc9c',     // Teal
-    'light_sensor': '#f1c40f',         // Yellow
-    'sound_sensor': '#e67e22',         // Dark Orange
-    'vibration_sensor': '#34495e',     // Dark Blue
-    'default': '#95a5a6'               // Gray (default)
+    'H2S': '#e74c3c',          // Red
+    'LEL-MPS': '#3498db',      // Blue
+    'O2': '#2ecc71',           // Green
+    'NH3': '#f39c12',          // Orange
+    'LEL': '#9b59b6',          // Purple
+    'O3': '#1abc9c',           // Teal
+    'HCN': '#f1c40f',          // Yellow
+    'Cl2': '#e67e22',          // Dark Orange
+    'CO': '#34495e',           // Dark Blue
+    'ClO2': '#16a085',         // Green Blue
+    'PID': '#d35400',          // Burnt Orange
+    'HF': '#8e44ad',           // Purple
+    'NO2': '#2980b9',          // Dark Blue
+    'Gamma': '#c0392b',        // Dark Red
+    'CO2': '#27ae60',          // Dark Green
+    'SO2': '#7f8c8d',          // Gray
+    'default': '#95a5a6'       // Light Gray (default)
   };
   
   constructor(
@@ -87,17 +92,17 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     console.log('MapComponent initialized');
     
-    // 设置默认日期范围 - 最近12小时
+    // Set default date range - last 14 days
     const today = new Date();
-    const twelveHoursAgo = new Date();
-    twelveHoursAgo.setHours(today.getHours() - 12);
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(today.getDate() - 14);
     
     this.appliedFilters.endDate = this.formatDate(today);
-    this.appliedFilters.startDate = this.formatDate(twelveHoursAgo);
+    this.appliedFilters.startDate = this.formatDate(fourteenDaysAgo);
     
     console.log('Default date range set:', this.appliedFilters.startDate, 'to', this.appliedFilters.endDate);
     
-    // 先初始化地图，然后再加载数据
+    // Initialize map before loading data
     this.initMap();
   }
   
@@ -131,7 +136,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('Initializing map...');
     
     try {
-      // 确保在Angular区域内执行地图初始化
+      // Ensure map initialization runs outside Angular zone for better performance
       this.ngZone.runOutsideAngular(() => {
         setTimeout(() => {
           const mapDiv = document.getElementById('map');
@@ -146,7 +151,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
           
           console.log('Map container found, creating map instance');
           
-          // 确保地图容器有宽高
+          // Ensure map container has width and height
           if (mapDiv.clientHeight === 0 || mapDiv.clientWidth === 0) {
             console.warn('Map container has zero height or width!');
             mapDiv.style.height = '500px';
@@ -157,10 +162,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
           this.map = L.map('map', {
             center: [20, 0],
             zoom: 2,
-            preferCanvas: true,    // 使用Canvas渲染提高性能
-            wheelDebounceTime: 150, // 滚轮防抖时间
-            zoomSnap: 0.5,         // 平滑缩放
-            zoomDelta: 0.5,        // 平滑缩放步长
+            preferCanvas: true,     // Use Canvas rendering for better performance
+            wheelDebounceTime: 150, // Debounce time for wheel events
+            zoomSnap: 0.5,          // Smooth zooming
+            zoomDelta: 0.5,         // Smooth zoom steps
             markerZoomAnimation: true
           });
           
@@ -171,18 +176,18 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             maxZoom: 19
           }).addTo(this.map);
           
-          // 初始化聚合标记层
+          // Initialize marker cluster layer
           this.markerLayer = L.markerClusterGroup({
-            disableClusteringAtZoom: 13,  // 缩放级别大于13时显示单独的标记
-            maxClusterRadius: 50,         // 聚合半径
-            spiderfyOnMaxZoom: true,      // 在最大缩放级别时展开聚合
-            chunkedLoading: true,         // 分块加载提高性能
-            zoomToBoundsOnClick: true,    // 点击聚合时缩放到边界
-            showCoverageOnHover: false,   // 不显示聚合范围
-            animate: true                 // 动画效果
+            disableClusteringAtZoom: 13,
+            maxClusterRadius: 50,
+            spiderfyOnMaxZoom: true,
+            chunkedLoading: true,
+            zoomToBoundsOnClick: true,
+            showCoverageOnHover: false,
+            animate: true
           }).addTo(this.map);
           
-          // 地图移动结束时更新标记
+          // Update markers when map movement ends
           this.map.on('moveend', () => {
             if (this.mapUpdateTimer) {
               clearTimeout(this.mapUpdateTimer);
@@ -190,22 +195,22 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             
             this.mapUpdateTimer = setTimeout(() => {
               this.updateMapMarkers();
-            }, 300); // 300ms延迟
+            }, 300); // 300ms delay
           });
           
           this.mapInitialized = true;
           console.log('Map initialized successfully');
           
-          // Fix map rendering - 必须在Angular区域内设置状态
+          // Fix map rendering - must set state inside Angular zone
           this.ngZone.run(() => {
             setTimeout(() => {
               console.log('Invalidating map size');
               this.map.invalidateSize();
-              // 现在加载数据
+              // Now load data
               this.loadData();
             }, 500);
           });
-        }, 300); // 稍微延迟确保DOM已准备好
+        }, 300); // Small delay to ensure DOM is ready
       });
     } catch (error) {
       console.error('Error initializing map:', error);
@@ -233,7 +238,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     
     console.log('Requesting data with filters:', apiFilters);
     
-    // 确保地图初始化后再加载数据
+    // Ensure map is initialized before loading data
     if (!this.mapInitialized) {
       console.warn('Map not initialized yet, initializing now');
       this.initMap();
@@ -277,7 +282,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     const sensorTypes = [...new Set(alerts.map(alert => alert.sensor_type))].filter(Boolean);
     const industries = [...new Set(alerts.map(alert => alert.industry))].filter(Boolean);
     
-    // Group countries by continent (simplified example)
+    // Group countries by continent
     const allCountries = [...new Set(alerts.map(alert => alert.country))].filter(Boolean) as string[];
     
     // Simplified continent mapping
@@ -314,7 +319,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   /**
-   * Update map markers based on the filtered alerts
+   * Update map markers based on the filtered alerts - show all markers
    */
   updateMapMarkers(): void {
     console.log('Updating map markers');
@@ -324,7 +329,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     
-    // 确保在Angular区域外执行标记更新，提高性能
+    // Execute marker update outside Angular zone for better performance
     this.ngZone.runOutsideAngular(() => {
       this.isLoadingMarkers = true;
       this.loadingProgress = 0;
@@ -333,7 +338,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.markerLayer.clearLayers();
       this.markers = [];
       
-      // 获取当前视图边界，只显示可见区域的标记
+      // Get current view bounds
       const bounds = this.map.getBounds();
       
       // Track displayed sensor types for the legend
@@ -344,8 +349,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         alert.latitude !== undefined && 
         alert.latitude !== null && 
         alert.longitude !== undefined && 
-        alert.longitude !== null &&
-        (this.showAllMarkers || bounds.contains([alert.latitude, alert.longitude]))
+        alert.longitude !== null
       );
       
       this.ngZone.run(() => {
@@ -354,19 +358,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       
       console.log(`Found ${alertsWithLocation.length} alerts with valid location data`);
       
-      // 限制标记数量以提高性能
-      const maxMarkers = this.showAllMarkers ? alertsWithLocation.length : Math.min(this.MAX_VISIBLE_MARKERS, alertsWithLocation.length);
-      const markersToShow = alertsWithLocation.slice(0, maxMarkers);
+      // Show all markers - no limit
+      const markersToShow = alertsWithLocation;
       
       this.ngZone.run(() => {
         this.markersDisplayed = markersToShow.length;
       });
       
-      if (alertsWithLocation.length > maxMarkers && !this.showAllMarkers) {
-        console.log(`Limiting display to ${maxMarkers} out of ${alertsWithLocation.length} markers`);
-      }
-      
-      // 批量创建标记以提高性能
+      // Process markers in batches for better performance
       const batchSize = 100;
       const processBatch = (startIndex: number) => {
         const endIndex = Math.min(startIndex + batchSize, markersToShow.length);
@@ -384,29 +383,29 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             this.displayedSensorTypes.push(sensorType);
           }
           
-          // 创建轻量级标记
+          // Create lightweight marker
           const marker = this.createLightweightMarker(alert);
           newMarkers.push(marker);
         });
         
-        // 一次性添加整批标记
+        // Add batch of markers at once
         this.markerLayer.addLayers(newMarkers);
         this.markers = this.markers.concat(newMarkers);
         
-        // 更新进度
+        // Update progress
         const progress = Math.round((endIndex / markersToShow.length) * 100);
         this.ngZone.run(() => {
           this.loadingProgress = progress;
         });
         
-        // 如果还有更多批次，继续处理
+        // If there are more batches, continue processing
         if (endIndex < markersToShow.length) {
           setTimeout(() => processBatch(endIndex), 10);
         } else {
-          // 所有批次处理完毕
+          // All batches processed
           console.log(`Added ${this.markers.length} markers to the map`);
           
-          // 在Angular区域内更新UI状态
+          // Update UI state inside Angular zone
           this.ngZone.run(() => {
             this.isLoadingMarkers = false;
             
@@ -435,10 +434,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       };
       
-      // 跟踪地图是否已被用户移动
+      // Track if map has been moved
       this.mapWasMoved = this.map.getCenter().lat !== 20 || this.map.getCenter().lng !== 0;
       
-      // 开始第一批处理
+      // Start first batch
       if (markersToShow.length > 0) {
         processBatch(0);
       } else {
@@ -451,7 +450,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   /**
-   * 创建轻量级的圆形标记，比传统标记性能更好
+   * Create lightweight circle marker for better performance
    */
   private createLightweightMarker(alert: EventRecord): L.CircleMarker {
     const sensorType = alert.sensor_type || 'default';
@@ -460,16 +459,16 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     const marker = L.circleMarker(
       [alert.latitude as number, alert.longitude as number], 
       {
-        radius: 6,             // 半径
-        fillColor: color,      // 填充颜色
-        color: '#fff',         // 边框颜色
-        weight: 1,             // 边框宽度
-        opacity: 1,            // 不透明度
-        fillOpacity: 0.7       // 填充不透明度
+        radius: 6,             // Radius
+        fillColor: color,      // Fill color
+        color: '#fff',         // Border color
+        weight: 1,             // Border width
+        opacity: 1,            // Opacity
+        fillOpacity: 0.7       // Fill opacity
       }
     );
     
-    // 创建弹出窗口内容
+    // Create popup content
     const popupContent = `
       <div style="padding: 6px;">
         <div style="font-weight: bold; margin-bottom: 6px;">${alert.sensor_type || 'Unknown Sensor'}</div>
@@ -479,7 +478,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       </div>
     `;
     
-    // 添加弹出窗口
+    // Add popup
     marker.bindPopup(popupContent);
     
     return marker;
@@ -521,14 +520,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.totalAlertsWithLocation, 'alerts with location,',
       this.uniqueLocations, 'unique locations,',
       this.uniqueCountries, 'unique countries');
-  }
-  
-  /**
-   * Toggle between showing all markers and only visible area markers
-   */
-  toggleAllMarkers(): void {
-    this.showAllMarkers = !this.showAllMarkers;
-    this.updateMapMarkers();
   }
   
   /**
@@ -577,17 +568,17 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   resetFilters(): void {
     console.log('Resetting filters');
-    // 重置为默认过滤器，使用更短的时间范围
+    // Reset to default filters, with 14-day time range instead of 12 hours
     const today = new Date();
-    const twelveHoursAgo = new Date();
-    twelveHoursAgo.setHours(today.getHours() - 12);
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(today.getDate() - 14);
     
     this.appliedFilters = {
       sensorTypes: [],
       industries: [],
       countries: [],
       continents: [],
-      startDate: this.formatDate(twelveHoursAgo),
+      startDate: this.formatDate(fourteenDaysAgo),
       endDate: this.formatDate(today)
     };
     
@@ -619,7 +610,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     
-    // 日期过滤器也计入总数
+    // Date filters also count
     if (this.appliedFilters.startDate) count++;
     if (this.appliedFilters.endDate) count++;
     
@@ -627,7 +618,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   /**
-   * 获取日期范围文本以用于显示
+   * Get date range text for display
    */
   getDateRangeText(): string {
     if (!this.appliedFilters.startDate || !this.appliedFilters.endDate) {
@@ -653,17 +644,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   /**
-   * 获取性能提示文本
-   */
-  getPerformanceMessage(): string {
-    if (this.totalAlertsWithLocation <= this.markersDisplayed) {
-      return '';
-    }
-    
-    return `Showing ${this.markersDisplayed} out of ${this.totalAlertsWithLocation} locations for better performance.`;
-  }
-  
-  /**
    * Handle window resize for responsive design
    */
   @HostListener('window:resize', ['$event'])
@@ -675,6 +655,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   
-  // 跟踪地图是否被移动
+  // Track if map has been moved
   private mapWasMoved: boolean = false;
 }

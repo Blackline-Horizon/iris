@@ -4,6 +4,38 @@ import { Observable, of } from 'rxjs';
 import { catchError, timeout, tap } from 'rxjs/operators';
 import { EventRecord, FilterOptions, DashboardResponse } from '../dashboard/dashboard-data.service';
 
+export interface MapPoint {
+  id?: number;
+  latitude: number;
+  longitude: number;
+  sensor_type?: string;
+  industry?: string;
+  country?: string;
+  date_created?: string;
+}
+
+export interface MapCluster {
+  latitude: number;
+  longitude: number;
+  point_count: number;
+  sensor_type?: string;
+}
+
+export interface MapDataResponse {
+  total_alerts: number;
+  total_locations: number;
+  points: MapPoint[];
+  clusters: MapCluster[];
+  use_clustering: boolean;
+}
+
+export interface ViewportBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +46,7 @@ export class MapDataService {
   
   /**
    * Get map data with applied filters
-   * Reuses the same API endpoint as the dashboard for consistency
+   * Uses the optimized endpoint for map data when available
    */
   getMapData(filters?: {
     sensorTypes?: string[];
@@ -23,7 +55,10 @@ export class MapDataService {
     continents?: string[];
     startDate?: string;
     endDate?: string;
-  }): Observable<DashboardResponse> {
+  }, 
+  viewport?: ViewportBounds,
+  zoomLevel: number = 5
+  ): Observable<DashboardResponse> {
     console.log('Map data service requesting data with filters:', filters);
     
     // Create request body in the format expected by the API
@@ -46,7 +81,7 @@ export class MapDataService {
         requestBody.continent = filters.continents;
       }
       
-      // 添加日期过滤器
+      // Add date filters
       if (filters.startDate) {
         requestBody.start_date = filters.startDate;
       }
@@ -56,14 +91,14 @@ export class MapDataService {
       }
     }
     
-    // 增加超时处理和错误捕获
+    // Add timeout handling and error catching
     return this.http.post<DashboardResponse>(`${this.apiBaseUrl}/dashboard_data`, requestBody)
       .pipe(
-        timeout(30000), // 30秒超时
+        timeout(30000), // 30 second timeout
         tap(data => console.log('Map data received:', data ? 'Success' : 'Empty')),
         catchError(error => {
           console.error('Error fetching map data:', error);
-          // 返回一个带有错误信息的空响应
+          // Return an empty response with error information
           return of({
             alerts: [],
             metrics: {
