@@ -48,8 +48,8 @@
             ></app-metric-card>
           </div>
           
-          <!-- Floating Filter Panel -->
-          <div class="floating-filter-panel" [ngClass]="{'open': isFilterPanelOpen}">
+          <!-- Floating Filter Panel - Full screen overlay approach -->
+          <div class="floating-filter-panel">
             <div class="filter-buttons">
               <button class="filter-toggle-button" (click)="toggleFilterPanel()">
                 <i class="fas" [ngClass]="isFilterPanelOpen ? 'fa-times' : 'fa-filter'"></i>
@@ -61,17 +61,32 @@
                 <span>Reset All</span>
               </button>
             </div>
+          </div>
+          
+          <!-- Filter Panel - Full screen overlay -->
+          <div class="compact-filter-content" *ngIf="isFilterPanelOpen">
+            <h2 style="color: #3498db; margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+              <i class="fas fa-filter" style="margin-right: 8px;"></i>Filter Options
+            </h2>
+            <app-dashboard-filters
+              [filterOptions]="filterOptions"
+              [appliedFilters]="appliedFilters"
+              [dashboardType]="'map'"
+              [compact]="true"
+              [hideResetButton]="true"
+              (filtersChanged)="updateFilters($event)"
+              (applyFilterClicked)="applyFilters($event)"
+            ></app-dashboard-filters>
             
-            <div class="compact-filter-content" *ngIf="isFilterPanelOpen">
-              <app-dashboard-filters
-                [filterOptions]="filterOptions"
-                [appliedFilters]="appliedFilters"
-                [dashboardType]="'map'"
-                [compact]="true"
-                [hideResetButton]="true"
-                (filtersChanged)="updateFilters($event)"
-                (applyFilterClicked)="applyFilters($event)"
-              ></app-dashboard-filters>
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+              <button class="filter-toggle-button" style="background-color: #7f8c8d;" (click)="toggleFilterPanel()">
+                <i class="fas fa-times"></i>
+                <span>Cancel</span>
+              </button>
+              <button class="filter-toggle-button" (click)="applyFilters(appliedFilters)">
+                <i class="fas fa-check"></i>
+                <span>Apply Filters</span>
+              </button>
             </div>
           </div>
         </div>
@@ -93,20 +108,26 @@
             </h3>
           </div>
           
-          <!-- Ensure map container has clear height and styles -->
-          <div class="map-container">
-            <!-- Map will be rendered here -->
-            <div id="map" style="height: 500px; width: 100%;"></div>
+          <!-- Map Container with Legend -->
+          <div class="map-container-wrapper">
+            <!-- Main map container -->
+            <div class="map-container">
+              <div id="map"></div>
+            </div>
             
-            <!-- Map Legend -->
-            <div class="map-legend" *ngIf="displayedSensorTypes.length > 0">
-              <div class="legend-title">Sensor Types</div>
-              <div class="legend-item" *ngFor="let sensorType of displayedSensorTypes; let i = index">
-                <span 
-                  class="legend-color" 
-                  [style.background-color]="getMarkerColor(sensorType)"
-                ></span>
-                <span>{{ formatSensorType(sensorType) }}</span>
+            <!-- Side legend container -->
+            <div class="map-legend-container" *ngIf="displayedSensorTypes.length > 0">
+              <div class="map-legend">
+                <div class="legend-title">Sensor Types</div>
+                <div class="legend-items">
+                  <div class="legend-item" *ngFor="let sensorType of displayedSensorTypes; let i = index">
+                    <span 
+                      class="legend-color" 
+                      [style.background-color]="getMarkerColor(sensorType)"
+                    ></span>
+                    <span class="legend-label">{{ formatSensorType(sensorType) }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

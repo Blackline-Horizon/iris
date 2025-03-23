@@ -30,6 +30,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private markerLayer: any; // MarkerClusterGroup
   private mapInitialized: boolean = false;
   private mapUpdateTimer: any = null;
+  private openPopup: L.Popup | null = null; // Track current open popup
   
   // Data properties
   alerts: EventRecord[] = [];
@@ -61,25 +62,25 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   uniqueLocations: number = 0;
   uniqueCountries: number = 0;
   
-  // Marker colors for different sensor types
+  // Marker colors for different sensor types - updated with more vibrant colors
   private sensorTypeColors: Record<string, string> = {
-    'H2S': '#e74c3c',          // Red
-    'LEL-MPS': '#3498db',      // Blue
-    'O2': '#2ecc71',           // Green
-    'NH3': '#f39c12',          // Orange
-    'LEL': '#9b59b6',          // Purple
-    'O3': '#1abc9c',           // Teal
-    'HCN': '#f1c40f',          // Yellow
-    'Cl2': '#e67e22',          // Dark Orange
-    'CO': '#34495e',           // Dark Blue
-    'ClO2': '#16a085',         // Green Blue
-    'PID': '#d35400',          // Burnt Orange
-    'HF': '#8e44ad',           // Purple
-    'NO2': '#2980b9',          // Dark Blue
-    'Gamma': '#c0392b',        // Dark Red
-    'CO2': '#27ae60',          // Dark Green
-    'SO2': '#7f8c8d',          // Gray
-    'default': '#95a5a6'       // Light Gray (default)
+    'H2S': '#FF5252',          // Bright Red
+    'LEL-MPS': '#448AFF',      // Bright Blue
+    'O2': '#4CAF50',           // Bright Green
+    'NH3': '#FF9800',          // Bright Orange
+    'LEL': '#9C27B0',          // Bright Purple
+    'O3': '#00BCD4',           // Bright Teal
+    'HCN': '#FFEB3B',          // Bright Yellow
+    'Cl2': '#FF6E40',          // Bright Orange-Red
+    'CO': '#3F51B5',           // Indigo
+    'ClO2': '#009688',         // Teal
+    'PID': '#FF5722',          // Deep Orange
+    'HF': '#673AB7',           // Deep Purple
+    'NO2': '#2196F3',          // Bright Blue
+    'Gamma': '#E53935',        // Red
+    'CO2': '#4CAF50',          // Green
+    'SO2': '#607D8B',          // Blue Grey
+    'default': '#9E9E9E'       // Medium Grey (default)
   };
   
   constructor(
@@ -130,7 +131,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   /**
-   * Initialize the Leaflet map
+   * Initialize the Leaflet map with improved settings for stability
    */
   private initMap(): void {
     console.log('Initializing map...');
@@ -158,15 +159,19 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             mapDiv.style.width = '100%';
           }
           
-          // Create map instance with improved settings
+          // IMPROVED: Create map instance with better performance settings
           this.map = L.map('map', {
             center: [20, 0],
             zoom: 2,
-            preferCanvas: true,     // Use Canvas rendering for better performance
-            wheelDebounceTime: 150, // Debounce time for wheel events
-            zoomSnap: 0.5,          // Smooth zooming
-            zoomDelta: 0.5,         // Smooth zoom steps
-            markerZoomAnimation: true
+            preferCanvas: true,       // Use Canvas rendering for better performance
+            wheelDebounceTime: 150,   // Debounce time for wheel events
+            zoomSnap: 0.5,            // Smooth zooming
+            zoomDelta: 0.5,           // Smooth zoom steps
+            markerZoomAnimation: true,
+            zoomAnimation: true,      // Enable zoom animations for smoother experience
+            fadeAnimation: false,     // Disable fade animations that can cause jitter
+            inertia: true,            // Enable inertia for smoother panning
+            worldCopyJump: true       // Smooth wrapping at the 180th meridian
           });
           
           // Add tile layer (dark theme to match dashboard)
@@ -176,25 +181,109 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             maxZoom: 19
           }).addTo(this.map);
           
-          // Initialize marker cluster layer
+          // IMPROVED: Initialize marker cluster layer with enhanced settings for stability
           this.markerLayer = L.markerClusterGroup({
             disableClusteringAtZoom: 13,
-            maxClusterRadius: 50,
+            maxClusterRadius: 60,        // Slightly larger to reduce marker movement
             spiderfyOnMaxZoom: true,
             chunkedLoading: true,
             zoomToBoundsOnClick: true,
-            showCoverageOnHover: false,
-            animate: true
+            showCoverageOnHover: false,  // Disable for cleaner appearance
+            animate: true,
+            animateAddingMarkers: false, // Disable animation when adding markers (reduces jitter)
+            spiderfyDistanceMultiplier: 1.5, // More spacing for spiderfied markers
+            
+            // IMPROVED: Custom icon creation function for truly circular clusters
+            iconCreateFunction: (cluster) => {
+              const count = cluster.getChildCount();
+              let size, bgColor, textColor;
+              
+              // Get the dominant sensor type in the cluster to determine color
+              const sensorTypes = new Map();
+              cluster.getAllChildMarkers().forEach((marker: any) => {
+                try {
+                  // Access the sensor type from our custom property
+                  const sensorType = marker.sensorType || 'default';
+                  sensorTypes.set(sensorType, (sensorTypes.get(sensorType) || 0) + 1);
+                } catch (e) {
+                  // Fallback if marker structure is different
+                }
+              });
+              
+              let dominantSensorType = 'default';
+              let maxCount = 0;
+              sensorTypes.forEach((count, sensorType) => {
+                if (count > maxCount) {
+                  maxCount = count;
+                  dominantSensorType = sensorType;
+                }
+              });
+              
+              // Get color for dominant sensor type
+              bgColor = this.getMarkerColor(dominantSensorType);
+              
+              // Determine size based on count
+              if (count < 10) {
+                size = 40;
+              } else if (count < 100) {
+                size = 50;
+              } else {
+                size = 60;
+              }
+              
+              textColor = '#FFFFFF';
+              
+              // Custom HTML for truly circular appearance (with clean modern look)
+              return L.divIcon({
+                html: `<div style="
+                  width: 100%; 
+                  height: 100%; 
+                  border-radius: 50%; 
+                  background-color: ${bgColor}; 
+                  border: 2px solid white;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+                  font-weight: bold;
+                  color: ${textColor};
+                  font-size: ${count >= 1000 ? '12' : '14'}px;
+                ">${count}</div>`,
+                className: 'custom-cluster-icon',
+                iconSize: [size, size],
+                iconAnchor: [size/2, size/2]
+              });
+            }
           }).addTo(this.map);
           
-          // Update markers when map movement ends
+          // IMPROVED: Better popup handling
+          let popupCloseTimeout: number | null = null;
+          
+          // Close popup when clicking elsewhere on map - with debounce
+          this.map.on('click', () => {
+            if (this.openPopup) {
+              // Slight delay to allow for popup opening to complete
+              if (popupCloseTimeout) {
+                clearTimeout(popupCloseTimeout);
+              }
+              popupCloseTimeout = window.setTimeout(() => {
+                if (this.openPopup) {
+                  this.map.closePopup(this.openPopup);
+                  this.openPopup = null;
+                }
+              }, 50);
+            }
+          });
+          
+          // IMPROVED: Debounced update markers when map movement ends
           this.map.on('moveend', () => {
             if (this.mapUpdateTimer) {
               clearTimeout(this.mapUpdateTimer);
             }
             
             this.mapUpdateTimer = setTimeout(() => {
-              this.updateMapMarkers();
+              // Only update visible counts, don't redraw markers (less jitter)
+              this.updateMapCounts();
             }, 300); // 300ms delay
           });
           
@@ -258,7 +347,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         
         // Process map markers
-        this.updateMapMarkers();
+        this.updateMapMarkers(true); // true = zoom to fit
         
         // Calculate metrics
         this.calculateMetrics();
@@ -319,9 +408,40 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   /**
-   * Update map markers based on the filtered alerts - show all markers
+   * IMPROVED: Only update visible marker counts without redrawing markers
+   * This prevents jitter when moving the map
    */
-  updateMapMarkers(): void {
+  updateMapCounts(): void {
+    if (!this.mapInitialized || !this.map) {
+      return;
+    }
+    
+    try {
+      // Count markers in current viewport
+      const bounds = this.map.getBounds();
+      let visibleMarkers = 0;
+      
+      // Count visible markers based on bounds
+      this.markers.forEach(marker => {
+        if (bounds.contains(marker.getLatLng())) {
+          visibleMarkers++;
+        }
+      });
+      
+      // Update UI safely
+      this.ngZone.run(() => {
+        this.markersDisplayed = visibleMarkers;
+      });
+    } catch (error) {
+      console.error('Error updating map counts:', error);
+    }
+  }
+  
+  /**
+   * IMPROVED: Update map markers based on the filtered alerts - show all markers
+   * @param zoomToFit Whether to zoom to fit all markers after loading
+   */
+  updateMapMarkers(zoomToFit: boolean = false): void {
     console.log('Updating map markers');
     
     if (!this.mapInitialized || !this.map) {
@@ -338,13 +458,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.markerLayer.clearLayers();
       this.markers = [];
       
-      // Get current view bounds
-      const bounds = this.map.getBounds();
-      
       // Track displayed sensor types for the legend
-      this.displayedSensorTypes = [];
+      const newDisplayedSensorTypes: string[] = [];
       
-      // Add new markers for each alert with location data
+      // IMPROVED: Pre-filter alerts with location data for better performance
       const alertsWithLocation = this.alerts.filter(alert => 
         alert.latitude !== undefined && 
         alert.latitude !== null && 
@@ -365,25 +482,43 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.markersDisplayed = markersToShow.length;
       });
       
-      // Process markers in batches for better performance
-      const batchSize = 100;
-      const processBatch = (startIndex: number) => {
-        const endIndex = Math.min(startIndex + batchSize, markersToShow.length);
-        const batch = markersToShow.slice(startIndex, endIndex);
+      // Track bounds for all markers to zoom to fit
+      const markerBounds = L.latLngBounds([]);
+      
+      // IMPROVED: Process markers in larger batches for better performance
+      const batchSize = 200; // Increased batch size
+      
+      // IMPROVED: Prepare all marker data first, then create markers in batches
+      const markerData = markersToShow.map(alert => {
+        // Get color based on sensor type
+        const sensorType = alert.sensor_type || 'default';
         
-        const newMarkers: L.CircleMarker[] = [];
+        // Add sensor type to displayedSensorTypes array for legend
+        if (!newDisplayedSensorTypes.includes(sensorType)) {
+          newDisplayedSensorTypes.push(sensorType);
+        }
         
-        batch.forEach(alert => {
-          // Get color based on sensor type
-          const sensorType = alert.sensor_type || 'default';
-          const color = this.getMarkerColor(sensorType);
-          
-          // Add sensor type to displayedSensorTypes array for legend
-          if (!this.displayedSensorTypes.includes(sensorType)) {
-            this.displayedSensorTypes.push(sensorType);
-          }
-          
-          // Create lightweight marker
+        // Add to bounds for zooming
+        if (alert.latitude && alert.longitude) {
+          markerBounds.extend([alert.latitude, alert.longitude]);
+        }
+        
+        return {
+          alert,
+          latlng: [alert.latitude as number, alert.longitude as number],
+          sensorType
+        };
+      });
+      
+      // IMPROVED: Process batches with better timing
+                const processBatch = (startIndex: number) => {
+        const endIndex = Math.min(startIndex + batchSize, markerData.length);
+        const batch = markerData.slice(startIndex, endIndex);
+        
+        const newMarkers: any[] = [];
+        
+        // Create all markers in batch
+        batch.forEach(({ alert, latlng, sensorType }) => {
           const marker = this.createLightweightMarker(alert);
           newMarkers.push(marker);
         });
@@ -393,14 +528,17 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.markers = this.markers.concat(newMarkers);
         
         // Update progress
-        const progress = Math.round((endIndex / markersToShow.length) * 100);
+        const progress = Math.round((endIndex / markerData.length) * 100);
         this.ngZone.run(() => {
           this.loadingProgress = progress;
         });
         
-        // If there are more batches, continue processing
-        if (endIndex < markersToShow.length) {
-          setTimeout(() => processBatch(endIndex), 10);
+        // If there are more batches, continue processing with proper timing
+        if (endIndex < markerData.length) {
+          // Use requestAnimationFrame for smoother batch processing
+          requestAnimationFrame(() => {
+            setTimeout(() => processBatch(endIndex), 0);
+          });
         } else {
           // All batches processed
           console.log(`Added ${this.markers.length} markers to the map`);
@@ -408,16 +546,22 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
           // Update UI state inside Angular zone
           this.ngZone.run(() => {
             this.isLoadingMarkers = false;
+            this.displayedSensorTypes = newDisplayedSensorTypes; // Update legend
             
-            // Fit map to markers if there are any
-            if (this.markers.length > 0 && !this.mapWasMoved) {
+            // Fit map to markers if there are any and if requested
+            if (this.markers.length > 0 && (zoomToFit || !this.mapWasMoved)) {
               try {
-                const group = L.featureGroup(this.markers);
-                this.map.fitBounds(group.getBounds(), { 
-                  padding: [30, 30],
-                  maxZoom: 10
-                });
-                console.log('Map fitted to marker bounds');
+                if (markerBounds.isValid()) {
+                  // IMPROVED: Use smoother animation for fitting bounds
+                  this.map.flyToBounds(markerBounds, { 
+                    padding: [40, 40],
+                    maxZoom: 10,
+                    duration: 0.75  // Faster animation
+                  });
+                  console.log('Map fitted to marker bounds');
+                } else {
+                  console.warn('Invalid bounds for markers');
+                }
               } catch (error) {
                 console.error('Error fitting map to bounds:', error);
               }
@@ -438,7 +582,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.mapWasMoved = this.map.getCenter().lat !== 20 || this.map.getCenter().lng !== 0;
       
       // Start first batch
-      if (markersToShow.length > 0) {
+      if (markerData.length > 0) {
         processBatch(0);
       } else {
         this.ngZone.run(() => {
@@ -450,36 +594,75 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   /**
-   * Create lightweight circle marker for better performance
+   * IMPROVED: Create lightweight circle marker with better performance and stability
+   * This function creates circular markers with proper styling
    */
-  private createLightweightMarker(alert: EventRecord): L.CircleMarker {
+  private createLightweightMarker(alert: EventRecord): any {
     const sensorType = alert.sensor_type || 'default';
     const color = this.getMarkerColor(sensorType);
     
-    const marker = L.circleMarker(
+    // Create a truly circular marker using divIcon with CSS for guaranteed circle appearance
+    const circleIcon = L.divIcon({
+      className: 'custom-circle-marker',
+      html: `<div style="background-color: ${color}; border: 2px solid white; width: 100%; height: 100%; border-radius: 50%;"></div>`,
+      iconSize: [16, 16],
+      iconAnchor: [8, 8]
+    });
+    
+    // Use marker with custom circle icon
+    const marker = L.marker(
       [alert.latitude as number, alert.longitude as number], 
       {
-        radius: 6,             // Radius
-        fillColor: color,      // Fill color
-        color: '#fff',         // Border color
-        weight: 1,             // Border width
-        opacity: 1,            // Opacity
-        fillOpacity: 0.7       // Fill opacity
+        icon: circleIcon,
+        bubblingMouseEvents: false,
+        keyboard: false,  // Disable keyboard navigation for better performance
+        riseOnHover: true  // Bring to front on hover
       }
     );
     
-    // Create popup content
+    // Add sensor type as custom property to the marker after creation
+    (marker as any).sensorType = sensorType;
+    
+    // IMPROVED: Create popup content with enhanced styling
     const popupContent = `
-      <div style="padding: 6px;">
-        <div style="font-weight: bold; margin-bottom: 6px;">${alert.sensor_type || 'Unknown Sensor'}</div>
-        <div>Industry: ${alert.industry || 'N/A'}</div>
-        <div>Country: ${alert.country || 'N/A'}</div>
-        <div>Date: ${new Date(alert.date_created).toLocaleString()}</div>
+      <div class="custom-popup">
+        <div class="popup-header">${alert.sensor_type || 'Unknown Sensor'}</div>
+        <div class="popup-content">
+          <div class="popup-item"><strong>Industry:</strong> ${alert.industry || 'N/A'}</div>
+          <div class="popup-item"><strong>Country:</strong> ${alert.country || 'N/A'}</div>
+          <div class="popup-item"><strong>Date:</strong> ${new Date(alert.date_created).toLocaleString()}</div>
+          <div class="popup-item"><strong>Total Alerts:</strong> ${this.totalAlerts}</div>
+        </div>
       </div>
     `;
     
-    // Add popup
-    marker.bindPopup(popupContent);
+    // IMPROVED: Add popup with options to prevent jittering
+    const popup = L.popup({
+      closeButton: true,
+      closeOnEscapeKey: true,
+      closeOnClick: false,        // Don't close on map click (handled manually)
+      autoPan: true,              // Auto-pan the map if popup is not visible
+      autoPanPadding: [50, 50],   // More padding for auto-pan (reduces edge cases)
+      offset: [0, -5],            // Slight offset
+      className: 'custom-popup-container', // Custom class for styling
+      keepInView: true            // Keep popup in view while panning
+    }).setContent(popupContent);
+    
+    // IMPROVED: Bind popup with better event handling
+    marker.bindPopup(popup);
+    
+    // IMPROVED: Track the open popup to handle closing with better event management
+    marker.on('click', (e) => {
+      L.DomEvent.stopPropagation(e);
+      
+      // Close any existing popup before opening a new one (prevents multiple popups)
+      if (this.openPopup && this.openPopup !== popup) {
+        this.map.closePopup(this.openPopup);
+      }
+      
+      this.openPopup = popup;
+      marker.openPopup();
+    });
     
     return marker;
   }
@@ -559,7 +742,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   applyFilters(filters: any): void {
     console.log('Applying filters:', filters);
     this.appliedFilters = { ...filters };
-    this.loadData();
+    this.loadData(); // loadData will automatically zoom to fit after loading
     this.isFilterPanelOpen = false;
   }
   
@@ -582,7 +765,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       endDate: this.formatDate(today)
     };
     
-    this.loadData();
+    this.loadData(); // Will zoom to fit all markers
   }
   
   /**

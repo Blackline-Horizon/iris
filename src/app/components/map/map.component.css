@@ -87,6 +87,7 @@
     gap: 1.5rem;
     margin-bottom: 1.75rem;
     align-items: flex-start;
+    position: relative; /* Ensure relative positioning for absolute filter panel */
   }
   
   .metrics-container {
@@ -110,6 +111,8 @@
     display: flex;
     gap: 10px;
     align-items: center;
+    position: relative;
+    z-index: 10;
   }
   
   .filter-toggle-button {
@@ -163,19 +166,26 @@
     font-size: 0.85rem;
   }
   
+  /* FIXED: Filter content appears as a modal overlay on top of EVERYTHING */
   .compact-filter-content {
-    position: absolute;
-    top: 3.5rem;
+    position: fixed;
+    top: 0;
     right: 0;
-    width: 320px;
-    background-color: #1b1b1b;
-    border-radius: 8px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(52, 152, 219, 0.2);
+    bottom: 0;
+    width: 400px;
+    background-color: rgba(20, 20, 20, 0.98);
+    border-left: 2px solid rgba(52, 152, 219, 0.7);
     overflow: auto;
-    max-height: 500px;
-    z-index: 100;
-    animation: filterSlideIn 0.3s ease-out;
+    z-index: 99999;
+    animation: filterSlideInRight 0.3s ease-out;
+    backdrop-filter: blur(10px);
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+  }
+  
+  @keyframes filterSlideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
   }
   
   @keyframes filterSlideIn {
@@ -196,7 +206,6 @@
   }
   
   .map-card:hover {
-    transform: translateY(-5px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
   
@@ -222,12 +231,73 @@
     color: #3498db;
   }
   
-  /* Map Container */
-  .map-container {
-    height: 600px;
-    width: 100%;
+  /* Map Container with Legend Side by Side */
+  .map-container-wrapper {
+    display: flex;
     position: relative;
-    z-index: 1;
+    height: 600px;
+  }
+  
+  .map-container {
+    flex: 1;
+    height: 100%;
+    position: relative;
+  }
+  
+  #map {
+    width: 100%;
+    height: 100%;
+    background-color: #121212;
+  }
+  
+  /* Legend Container - Now on the side */
+  .map-legend-container {
+    width: 200px;
+    background-color: rgba(27, 27, 27, 0.95);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    overflow-y: auto;
+    z-index: 5;
+  }
+  
+  .map-legend {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .legend-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #f0f0f0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+  }
+  
+  .legend-items {
+    overflow-y: auto;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+  }
+  
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .legend-label {
+    flex: 1;
+    word-break: break-word;
   }
   
   .map-footer {
@@ -328,113 +398,12 @@
     transform: translateY(-2px);
   }
   
-  /* Legend styles for the map */
-  .map-legend {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    background-color: rgba(27, 27, 27, 0.9);
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    z-index: 1000;
-    pointer-events: auto;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    max-height: 300px;
-    overflow-y: auto;
-    min-width: 180px;
-  }
-  
-  .legend-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #f0f0f0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 6px;
-  }
-  
-  .legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-    font-size: 0.8rem;
-  }
-  
-  .legend-color {
-    min-width: 12px;
-    min-height: 12px;
-    border-radius: 50%;
-    margin-right: 10px;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-  }
-  
-  /* Media Queries */
-  @media (max-width: 1200px) {
-    .metrics-filter-row {
-      flex-direction: column;
-    }
-    
-    .metrics-container {
-      width: 100%;
-    }
-    
-    .floating-filter-panel {
-      width: 100%;
-      align-items: flex-start;
-      margin-top: 1rem;
-    }
-    
-    .filter-buttons {
-      width: 100%;
-      justify-content: space-between;
-    }
-    
-    .compact-filter-content {
-      width: 100%;
-      position: relative;
-      top: 1rem;
-      max-height: none;
-    }
-  }
-  
-  @media (max-width: 992px) {
-    .map-main {
-      padding: 1.5rem;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .analytics-map {
-      margin-left: 0;
-      width: 100%;
-    }
-    
-    .map-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 1rem 1.5rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .map-main {
-      padding: 1rem;
-    }
-    
-    .map-footer {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-  }
-
-/* Progress bar styles */
-.loading-markers-progress {
+  /* Progress bar styles */
+  .loading-markers-progress {
     margin: 10px 0;
     background-color: rgba(0,0,0,0.2);
     border-radius: 4px;
-    padding: 5px 10px;
+    padding: 8px 12px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -472,30 +441,191 @@
     margin-left: 8px;
   }
   
-  /* Circle marker styles */
-  .leaflet-div-icon {
-    background: transparent;
-    border: none;
+  /* IMPROVED: Circle marker styles - enhanced for smoother animations and enforced circular appearance */
+  .custom-circle-marker {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother easing function */
+    opacity: 0.9;
   }
   
-  /* Cluster marker styles */
-  .marker-cluster {
-    background-color: rgba(52, 152, 219, 0.6);
+  .custom-circle-marker:hover {
+    transform: scale(1.3);
+    opacity: 1;
+    z-index: 1000 !important; /* Ensure hover marker is on top */
   }
   
-  .marker-cluster div {
-    background-color: rgba(52, 152, 219, 0.8);
-    color: white;
-    font-weight: bold;
+  /* Force circular appearance for all markers */
+  .custom-circle-marker div {
+    border-radius: 50% !important;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease-out;
   }
   
-  /* Optimized map popup styles */
+  .custom-circle-marker:hover div {
+    transform: scale(1.2);
+  }
+  
+  /* IMPROVED: Enhanced popup styles for stability */
+  .custom-popup-container {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 6px !important;
+    animation: none !important; /* Disable default Leaflet animations */
+    transform: none !important; /* Disable transforms that cause jitter */
+  }
+  
   .leaflet-popup-content-wrapper {
-    background-color: rgba(27, 27, 27, 0.9);
-    color: #f0f0f0;
-    border-radius: 4px;
+    background-color: rgba(27, 27, 27, 0.95) !important;
+    color: #f0f0f0 !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 0 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
   }
   
   .leaflet-popup-tip {
-    background-color: rgba(27, 27, 27, 0.9);
+    background-color: rgba(27, 27, 27, 0.95) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  .leaflet-popup-close-button {
+    color: #f0f0f0 !important;
+    font-size: 18px !important;
+    padding: 6px 8px !important;
+  }
+  
+  .custom-popup {
+    width: 100%;
+    min-width: 200px;
+  }
+  
+  .popup-header {
+    background-color: rgba(41, 128, 185, 0.7);
+    color: white;
+    padding: 10px 12px;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .popup-content {
+    padding: 10px 12px;
+  }
+  
+  .popup-item {
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  
+  .popup-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  /* IMPROVED: Cluster marker styles for better visibility with enforced circular shape */
+  .custom-cluster-icon {
+    transition: transform 0.2s ease-out !important;
+    contain: strict; /* Performance optimization */
+  }
+  
+  .custom-cluster-icon:hover {
+    transform: scale(1.1) !important;
+    z-index: 1000 !important;
+  }
+  
+  /* Override any Leaflet default styles that might interfere with our circular clusters */
+  .custom-cluster-icon,
+  .custom-cluster-icon div {
+    border-radius: 50% !important;
+    background-clip: padding-box !important;
+  }
+  
+  /* Make sure we don't have any backgrounds on the parent container */
+  .leaflet-marker-icon.custom-cluster-icon {
+    background: transparent !important;
+    border: none !important;
+  }
+  
+  /* Fix for Leaflet default animations that cause jitter */
+  .leaflet-fade-anim .leaflet-popup {
+    transition: none !important; /* Disable default Leaflet animations */
+  }
+  
+  .leaflet-zoom-anim .leaflet-zoom-animated {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; /* Smoother zoom */
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 1200px) {
+    .metrics-filter-row {
+      flex-direction: column;
+    }
+    
+    .metrics-container {
+      width: 100%;
+    }
+    
+    .floating-filter-panel {
+      width: 100%;
+      align-items: flex-start;
+      margin-top: 1rem;
+    }
+    
+    .filter-buttons {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .compact-filter-content {
+      width: 100%;
+      position: relative;
+      top: 1rem;
+      max-height: none;
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .map-main {
+      padding: 1.5rem;
+    }
+    
+    .map-container-wrapper {
+      flex-direction: column;
+      height: auto;
+    }
+    
+    .map-container {
+      height: 500px;
+    }
+    
+    .map-legend-container {
+      width: 100%;
+      height: auto;
+      max-height: 200px;
+      border-left: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .analytics-map {
+      margin-left: 0;
+      width: 100%;
+    }
+    
+    .map-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .map-main {
+      padding: 1rem;
+    }
+    
+    .map-footer {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
   }
