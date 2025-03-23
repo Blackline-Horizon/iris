@@ -1,0 +1,10 @@
+<div class="chart-container">
+  <canvas #lineCanvas></canvas>
+  
+  <div class="no-data-overlay" *ngIf="!data || data.length === 0">
+    <div class="no-data-message">
+      <i class="fas fa-chart-line"></i>
+      <span>No data available for the selected period</span>
+    </div>
+  </div>
+</div>

@@ -1,50 +1,121 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, timeout, tap } from 'rxjs/operators';
+import { EventRecord, FilterOptions, DashboardResponse } from '../dashboard/dashboard-data.service';
 
-
-export interface EventRecord {
-  id: number;
-  device_event_id: number;
-  device_event_type_id: number;
-  device_date_created: string;
-  date_created: string;
-  name: string;
-  assigned_user?: string;       
-  resolution_reason: string;
-  gas_type?: string;             
-  current_status: string;
-  user_id: number;
-  organization_id: number;
-  device_id: number;
-  date_acknowledged?: string;
-  acknowledge_user_id?: number;  
-  date_resolved?: string;
-  resolve_user_id?: number;     
-  date_last_updated?: string;
-  uuid?: string;
-  lat?: number;                   
-  lng?: number;                 
+export interface MapPoint {
+  id?: number;
+  latitude: number;
+  longitude: number;
+  sensor_type?: string;
+  industry?: string;
+  country?: string;
+  date_created?: string;
 }
 
-export interface EventType {
-  id: number;
-  name: string;
-  description: string;
-  is_visible: number;
-  is_high_alert: number;
+export interface MapCluster {
+  latitude: number;
+  longitude: number;
+  point_count: number;
+  sensor_type?: string;
 }
 
+export interface MapDataResponse {
+  total_alerts: number;
+  total_locations: number;
+  points: MapPoint[];
+  clusters: MapCluster[];
+  use_clustering: boolean;
+}
+
+export interface ViewportBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class MapDataService {
-  private jsonUrl = 'assets/data/map-data.json';
-
+  private apiBaseUrl = 'http://127.0.0.1:3001';
+  
   constructor(private http: HttpClient) {}
-
-  getAllEvents(): Observable<any> {
-    return this.http.get<any>(this.jsonUrl);
+  
+  /**
+   * Get map data with applied filters
+   * Uses the optimized endpoint for map data when available
+   */
+  getMapData(filters?: {
+    sensorTypes?: string[];
+    industries?: string[];
+    countries?: string[];
+    continents?: string[];
+    startDate?: string;
+    endDate?: string;
+  }, 
+  viewport?: ViewportBounds,
+  zoomLevel: number = 5
+  ): Observable<DashboardResponse> {
+    console.log('Map data service requesting data with filters:', filters);
+    
+    // Create request body in the format expected by the API
+    const requestBody: any = {};
+    
+    if (filters) {
+      if (filters.sensorTypes && filters.sensorTypes.length) {
+        requestBody.sensor_type = filters.sensorTypes;
+      }
+      
+      if (filters.industries && filters.industries.length) {
+        requestBody.industry = filters.industries;
+      }
+      
+      if (filters.countries && filters.countries.length) {
+        requestBody.country = filters.countries;
+      }
+      
+      if (filters.continents && filters.continents.length) {
+        requestBody.continent = filters.continents;
+      }
+      
+      // Add date filters
+      if (filters.startDate) {
+        requestBody.start_date = filters.startDate;
+      }
+      
+      if (filters.endDate) {
+        requestBody.end_date = filters.endDate;
+      }
+    }
+    
+    // Add timeout handling and error catching
+    return this.http.post<DashboardResponse>(`${this.apiBaseUrl}/dashboard_data`, requestBody)
+      .pipe(
+        timeout(30000), // 30 second timeout
+        tap(data => console.log('Map data received:', data ? 'Success' : 'Empty')),
+        catchError(error => {
+          console.error('Error fetching map data:', error);
+          // Return an empty response with error information
+          return of({
+            alerts: [],
+            metrics: {
+              total_alerts: 0,
+              avg_alerts_per_day: 0,
+              distribution_data: {
+                sensor_type: {},
+                resolution_reason: {},
+                device_type: {},
+                industry: {},
+                event_type: {}
+              }
+            },
+            time_series: [],
+            error: error.message || 'Failed to fetch data'
+          } as DashboardResponse);
+        })
+      );
   }
 }
