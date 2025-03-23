@@ -1,4 +1,3 @@
-/* /Users/shanzi/iris/iris/src/app/components/dashboard/dashboard-filters/dashboard-filters.component.css*/
 /* Main Filters Container */
 .filters-container {
   background-color: rgba(24, 24, 24, 0.95);
@@ -58,7 +57,7 @@
 }
 
 .filter-header:hover h3 {
-  color: #3498db;
+  color: #e74c3c; /* Changed from #3498db to red */
 }
 
 .filter-header h3 {
@@ -76,7 +75,7 @@
 }
 
 .filter-header i {
-  color: #3498db;
+  color: #e74c3c; /* Changed from #3498db to red */
   font-size: 0.8rem;
   transition: transform 0.3s ease;
 }
@@ -92,7 +91,7 @@
 }
 
 .select-all-btn:hover {
-  color: #3498db;
+  color: #e74c3c; /* Changed from #3498db to red */
   text-decoration: underline;
 }
 
@@ -143,18 +142,18 @@
   height: 16px;
   width: 16px;
   background-color: #2d2d2d;
-  border: 1px solid rgba(52, 152, 219, 0.4);
+  border: 1px solid rgba(231, 76, 60, 0.4); /* Changed from rgba(52, 152, 219, 0.4) to red */
   border-radius: 3px;
   transition: all 0.2s ease;
 }
 
 .checkbox-container:hover .checkmark {
-  border-color: #3498db;
+  border-color: #e74c3c; /* Changed from #3498db to red */
 }
 
 .checkbox-container input:checked ~ .checkmark {
-  background-color: #3498db;
-  border-color: #3498db;
+  background-color: #e74c3c; /* Changed from #3498db to red */
+  border-color: #e74c3c; /* Changed from #3498db to red */
 }
 
 .checkmark:after {
@@ -235,7 +234,7 @@
 
 .date-input input {
   background-color: #2d2d2d;
-  border: 1px solid rgba(52, 152, 219, 0.3);
+  border: 1px solid rgba(231, 76, 60, 0.3); /* Changed from rgba(52, 152, 219, 0.3) to red */
   color: #f0f0f0;
   border-radius: 4px;
   padding: 0.5rem;
@@ -245,8 +244,8 @@
 
 .date-input input:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+  border-color: #e74c3c; /* Changed from #3498db to red */
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.25); /* Changed from rgba(52, 152, 219, 0.25) to red */
 }
 
 /* Filter Actions */
@@ -268,16 +267,16 @@
 }
 
 .apply-btn {
-  background-color: #3498db;
+  background-color: #e74c3c; /* Changed from #3498db to red */
   color: white;
   flex: 2;
-  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3); /* Changed from rgba(52, 152, 219, 0.3) to red */
 }
 
 .apply-btn:hover {
-  background-color: #217dbb;
+  background-color: #c0392b; /* Changed from #217dbb to dark red */
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.4); /* Changed from rgba(52, 152, 219, 0.4) to red */
 }
 
 .reset-btn {
@@ -308,12 +307,12 @@
 }
 
 .filter-content.open::-webkit-scrollbar-thumb {
-  background: #3498db;
+  background: #e74c3c; /* Changed from #3498db to red */
   border-radius: 3px;
 }
 
 .filter-content.open::-webkit-scrollbar-thumb:hover {
-  background: #217dbb;
+  background: #c0392b; /* Changed from #217dbb to dark red */
 }
 
 /* Media Queries */
