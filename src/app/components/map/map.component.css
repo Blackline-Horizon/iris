@@ -420,4 +420,111 @@
       flex-direction: column;
       gap: 0.5rem;
     }
+
+    /* 添加这些样式到你的map.component.css */
+
+/* 进度条样式 */
+.loading-markers-progress {
+    margin: 10px 0;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 4px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background-color: #3498db;
+    transition: width 0.3s ease;
+  }
+  
+  .progress-text {
+    font-size: 0.85rem;
+    color: #aaa;
+    white-space: nowrap;
+  }
+  
+  /* 性能信息展示 */
+  .performance-info {
+    margin: 10px 0;
+    background-color: rgba(243, 156, 18, 0.2);
+    border: 1px solid rgba(243, 156, 18, 0.3);
+    border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #f39c12;
+    font-size: 0.9rem;
+  }
+  
+  .performance-info i {
+    font-size: 1.1rem;
+  }
+  
+  .toggle-all-btn {
+    margin-left: auto;
+    background-color: rgba(243, 156, 18, 0.3);
+    border: 1px solid rgba(243, 156, 18, 0.5);
+    color: #f39c12;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .toggle-all-btn:hover {
+    background-color: rgba(243, 156, 18, 0.5);
+  }
+  
+  /* 日期徽章 */
+  .date-badge {
+    background-color: rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(52, 152, 219, 0.3);
+    border-radius: 4px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
+    color: #3498db;
+    font-weight: 500;
+    margin-left: 8px;
+  }
+  
+  /* 圆形标记样式 */
+  .leaflet-div-icon {
+    background: transparent;
+    border: none;
+  }
+  
+  /* 聚合标记样式 */
+  .marker-cluster {
+    background-color: rgba(52, 152, 219, 0.6);
+  }
+  
+  .marker-cluster div {
+    background-color: rgba(52, 152, 219, 0.8);
+    color: white;
+    font-weight: bold;
+  }
+  
+  /* 优化地图弹出窗口样式 */
+  .leaflet-popup-content-wrapper {
+    background-color: rgba(27, 27, 27, 0.9);
+    color: #f0f0f0;
+    border-radius: 4px;
+  }
+  
+  .leaflet-popup-tip {
+    background-color: rgba(27, 27, 27, 0.9);
+  }
   }

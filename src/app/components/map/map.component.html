@@ -7,6 +7,7 @@
       <h1 class="map-title">Alert Location Map</h1>
       <div class="filter-summary" *ngIf="hasActiveFilters()">
         <span class="filter-badge">{{ getActiveFiltersCount() }} active filters</span>
+        <span class="date-badge">{{ getDateRangeText() }}</span>
       </div>
     </div>
 
@@ -28,7 +29,7 @@
       </div>
       
       <!-- Map Content -->
-      <div class="map-view" *ngIf="!isLoading && !error">
+      <div class="map-view" *ngIf="!error">
         <!-- Metrics Row with Filter -->
         <div class="metrics-filter-row">
           <div class="metrics-container">
@@ -75,6 +76,23 @@
           </div>
         </div>
         
+        <!-- Performance Info Banner -->
+        <div class="performance-info" *ngIf="totalAlertsWithLocation > markersDisplayed && !isLoading">
+          <i class="fas fa-info-circle"></i>
+          {{ getPerformanceMessage() }}
+          <button class="toggle-all-btn" (click)="toggleAllMarkers()">
+            {{ showAllMarkers ? 'Optimize Performance' : 'Show All Markers' }}
+          </button>
+        </div>
+        
+        <!-- Loading Markers Progress -->
+        <div class="loading-markers-progress" *ngIf="isLoadingMarkers && !isLoading">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="loadingProgress"></div>
+          </div>
+          <span class="progress-text">Loading markers: {{ loadingProgress }}%</span>
+        </div>
+        
         <!-- Map Card -->
         <div class="map-card">
           <div class="map-header-card">
@@ -84,9 +102,10 @@
             </h3>
           </div>
           
-          <div class="map-container" #mapContainer>
+          <!-- 确保地图容器有明确的高度和样式 -->
+          <div class="map-container">
             <!-- Map will be rendered here -->
-            <div id="map" style="height: 100%; width: 100%;"></div>
+            <div id="map" style="height: 500px; width: 100%;"></div>
             
             <!-- Map Legend -->
             <div class="map-legend" *ngIf="displayedSensorTypes.length > 0">
@@ -102,8 +121,14 @@
           </div>
           
           <div class="map-footer">
-            <span class="data-point">Displayed Alerts: {{ totalAlertsWithLocation }}</span>
-            <span class="data-point">Countries: {{ uniqueCountries }}</span>
+            <span class="data-point">
+              <i class="fas fa-map-marker-alt"></i> 
+              Displayed: {{ markersDisplayed }} / {{ totalAlertsWithLocation }}
+            </span>
+            <span class="data-point">
+              <i class="fas fa-globe"></i>
+              Countries: {{ uniqueCountries }}
+            </span>
           </div>
         </div>
       </div>

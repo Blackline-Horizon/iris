@@ -82,7 +82,7 @@ export class DashboardComponent implements OnInit {
     // Set default date range - last 30 days
     const today = new Date();
     const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(today.getDate() - 30);
+    thirtyDaysAgo.setDate(today.getDate() - 14);
     
     this.appliedFilters.endDate = this.formatDate(today);
     this.appliedFilters.startDate = this.formatDate(thirtyDaysAgo);
