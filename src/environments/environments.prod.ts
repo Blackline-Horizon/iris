@@ -8,9 +8,8 @@ export const environment = {
     ORACLE: 'https://oracle-qn2k.onrender.com/',
     cognito: {
       region: 'us-east-1',
-      userPoolId: 'us-east-1_Ht5XlW3rP',
-      userPoolWebClientId: '68l9qn3h7jo0j9umaa10vm3fdk',
+      userPoolId: 'us-east-1_Nzk8XOhgr',
       authenticationFlowType: 'USER_PASSWORD_AUTH',
-      clientId: '30pdqaaqbt1pip79k6raqo3jdl',
+      clientId: '5mi9bp4skgv21abtl8gpurqld',
     },
   };
