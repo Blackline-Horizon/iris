@@ -26,7 +26,7 @@ export class GenerateReportModalComponent {
     title:"",
     date_start:"",
     date_end: "",
-    industry:[],
+    industry:"",
     continents:[],
     alerts:[],
     devices:[],
@@ -83,8 +83,8 @@ export class GenerateReportModalComponent {
       return;
     }
     // turning industry into a list
-    this.newReport['industry'] = [this.newReport['industry']]
-    this.apiService.postHermes("report", this.newReport)
+    this.newReport['industry'] = [this.newReport != "All" ? this.newReport['industry'] : ""]
+    this.apiService.postAsyncHermes("report", this.newReport)
       .catch(err=>{
         throw err;
       })

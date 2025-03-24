@@ -29,6 +29,15 @@ export class ApiService {
       });
   }
 
+    // Method for POST Hermes
+    async postAsyncHermes(endpoint: string = '', data: Record<string, any> = {}): Promise<AxiosResponse<any>> {
+      return axios.post(environment.HERMES + endpoint, data)
+        .then(response => response)
+        .catch(error => {
+          console.error(`Error posting to ${environment.HERMES + endpoint}`, error);
+          throw error;
+        });
+    }
   // Method for POST Hermes
   deleteHermes(endpoint: string = '', params: Record<string, any> = {}): Promise<AxiosResponse<any>> {
     return axios.delete(environment.HERMES + endpoint, {params})
