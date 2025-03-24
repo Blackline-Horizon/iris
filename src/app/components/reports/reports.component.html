@@ -1,15 +1,33 @@
-<div class="min-h-screen bg-[#262626] relative">
+<div class="bg-[#121212] min-h-screen h-full w-full md:pl-60 pb-12 fixed">
   <!-- Fixed Header -->
-  <header class="fixed top-0 left-0 w-full z-20 bg-[#262626]">
-    <h1 class="text-4xl text-center text-white py-4">Previous Reports</h1>
-  </header>
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Previous Reports</h1>
+    <div class="justify-center">
+      <button
+        class="create-report text-white"
+        (click)="showModal()"
+      >
+        Create Report
+      </button>
+      <app-generate-report-modal
+        *ngIf="isModalVisible"
+        [industries]="industries"
+        [continents]="continents"
+        [alerts]="alerts"
+        [devices]="devices"
+        [resolutions]="resolutions"
+        [events]="events"
+        (close)="hideModal()"
+      ></app-generate-report-modal>
+    </div>
+  </div>
 
   <!-- Main Content: add top padding to avoid header overlap -->
   <div class="flex pt-20">
     <!-- Left Column: Fixed PDF display area with a right margin -->
-    <div class="w-2/3 fixed left-0 top-20 h-[calc(100vh-5rem)] md:pl-64 pb-16 mr-4">
+    <div class="w-2/3 fixed left-0 top-28 h-[calc(100vh-5rem)] md:pl-72 pb-16 mr-8">
       <div *ngIf="selectedPdfUrl; else noPdf" class="pdf-viewer-container h-full">
-        <iframe [src]="selectedPdfUrl" width="100%" height="110%" frameborder="0"></iframe>
+        <iframe [src]="selectedPdfUrl" width="100%" height="105%" frameborder="0"></iframe>
       </div>
       <ng-template #noPdf>
         <div class="flex items-center justify-center h-full">
@@ -18,35 +36,17 @@
       </ng-template>
     </div>
 
-    <!-- Right Column: Scrollable Reports list with an adjusted left margin for gap -->
-    <div class="w-1/3 h-[calc(100vh-5rem)] overflow-y-auto" style="margin-left: calc(66.6667% + 1rem)">
-      <div class="reports pb-16">
+    <!-- Right Column: Scrollable Reports list with adjusted left margin -->
+    <div class="w-1/3 h-[calc(100vh-5rem)] overflow-y-auto -mt-12 -ml-20" style="margin-left: calc(66.6667% - 2rem)">
+      <div class="reports">
         <!-- Reports List -->
         <div class="mb-6">
-          <div class="bg-[#131313] border-2 border-black rounded-xl p-4 shadow-xl">
-            <div class="bg-[#131313] rounded-3xl p-4 flex justify-center">
-              <button
-                class="create-report text-white px-4 py-2 rounded-3xl mb-4"
-                (click)="showModal()"
-              >
-                Create Report
-              </button>
-              <app-generate-report-modal
-                *ngIf="isModalVisible"
-                [industries]="industries"
-                [continents]="continents"
-                [alerts]="alerts"
-                [devices]="devices"
-                [resolutions]="resolutions"
-                [events]="events"
-                (close)="hideModal()"
-              ></app-generate-report-modal>
-            </div>
+          <div class="bg-[#1b1b1b] border-2 border-[#ffffff08] rounded-xl p-4 shadow-xl">
             <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4">
               <li
                 *ngFor="let report of reports"
                 [ngClass]="{
-                  'bg-[#3d0710] border-2 border-white': report.pdf_id === selectedPdfId,
+                  'bg-[#a6192e32] border-2 border-[#A6192E]': report.pdf_id === selectedPdfId,
                   'bg-[#2E2E2E]': report.pdf_id !== selectedPdfId
                 }"
                 class="rounded-xl p-4 shadow-md"
@@ -65,7 +65,7 @@
                   <button (click)="deleteReport(report.id)" class="text-red-400 hover:underline text-sm">
                     Delete
                   </button>
-                  <button (click)="openPdf(report.pdf_id)" class="text-blue-400 hover:underline text-sm">
+                  <button (click)="openPdf(report.pdf_id)" class="text-[#3498db] hover:underline text-sm">
                     View PDF
                   </button>
                 </div>

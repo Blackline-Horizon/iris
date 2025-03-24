@@ -1,28 +1,28 @@
-<div class="user-profile min-h-screen h-full w-full md:pl-64 pb-16">
-    <header>
-        <h1>Welcome,</h1>
-        <h2>{{ firstName }} {{ lastName }}</h2>
-    </header>
-    <div class="settings-card mb-5">
-        <h3>Account Settings</h3>
-        <form>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" value="{{ username }}" readonly disabled />
-            </div>
-            <div class="form-group">
-                <label for="first-name">First Name</label>
-                <input type="text" id="first-name" value="{{ firstName }}" readonly disabled />
-            </div>
-            <div class="form-group">
-                <label for="last-name">Last Name</label>
-                <input type="text" id="last-name" value="{{ lastName }}" readonly disabled />
-            </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" value="{{ email }}" readonly disabled />
-            </div>
-            <button type="button" class="change-password-btn">Change Password</button>
-        </form>
+<div class="user-profile min-h-screen h-full w-full md:pl-60 pb-12">
+    <div class="dashboard-header">
+      <h1 class="dashboard-title">Welcome Back, {{firstName}} {{lastName}}</h1>
     </div>
-</div>
+    <div class="settings-card mb-5">
+      <h3>Account Settings</h3>
+      <form>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" value="{{ username }}" readonly disabled />
+        </div>
+        <div class="form-group">
+          <label for="first-name">First Name</label>
+          <input type="text" id="first-name" value="{{ firstName }}" readonly disabled />
+        </div>
+        <div class="form-group">
+          <label for="last-name">Last Name</label>
+          <input type="text" id="last-name" value="{{ lastName }}" readonly disabled />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" value="{{ email }}" readonly disabled />
+        </div>
+        <button type="button" class="change-password-btn">Change Password</button>
+      </form>
+    </div>
+  </div>
+  

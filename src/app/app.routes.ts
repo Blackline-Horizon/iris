@@ -4,7 +4,6 @@ import { SignupComponent } from './components/signup/signup.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { MapComponent } from './components/map/map.component';
 import { ReportsComponent } from './components/reports/reports.component';
-import { SettingsComponent } from './components/settings/settings.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { AuthGuard } from './services/auth.guard';
 import { StatusComponent } from './components/status/status.component';
