@@ -1,50 +1,79 @@
-<div class="reports h-full min-h-screen md:pl-64 pb-16">
-    <h1 class="text-2xl font-bold text-red-horizon pb-2 pl-2">Previous Reports</h1>
-    <div class="mb-6">  
-        <div class="bg-[#2e2e2e] bg-opacity-90
-                 rounded-xl p-4 shadow-xl
-                items-center justify-between">
-            <h1 class="text-xl text-white font-semibold pb-3">Reports List</h1>
-            <ul class="text-white space-y-2">
-                <li *ngFor="let report of reports"
-                    class="flex justify-between items-center p-2 border border-gray-300 rounded w-full">
-                    <div>
-                        <strong>
-                            {{ report.title }}</strong> ({{ report.date_start }} - {{ report.date_end }}) Industry: {{ report.industry }}
-                    </div>
-                    <div>
-                        <button (click)="deleteReport(report.id)" class="text-red-600 hover:underline">
-                            Delete
-                        </button>
-                        <button (click)="openPdf(report.pdf_id)" class="text-blue-600 hover:underline ml-2">
-                            View PDF
-                        </button>
-                    </div>
-                </li>
-            </ul>
+<div class="min-h-screen bg-[#262626] relative">
+  <!-- Fixed Header -->
+  <header class="fixed top-0 left-0 w-full z-20 bg-[#262626]">
+    <h1 class="text-4xl text-center text-white py-4">Previous Reports</h1>
+  </header>
+
+  <!-- Main Content: add top padding to avoid header overlap -->
+  <div class="flex pt-20">
+    <!-- Left Column: Fixed PDF display area with a right margin -->
+    <div class="w-2/3 fixed left-0 top-20 h-[calc(100vh-5rem)] md:pl-64 pb-16 mr-4">
+      <div *ngIf="selectedPdfUrl; else noPdf" class="pdf-viewer-container h-full">
+        <iframe [src]="selectedPdfUrl" width="100%" height="110%" frameborder="0"></iframe>
+      </div>
+      <ng-template #noPdf>
+        <div class="flex items-center justify-center h-full">
+          <p class="text-white text-center">No Reports to Display</p>
         </div>
+      </ng-template>
     </div>
 
-    <div class="mb-6">
-        <div class="bg-[#2e2e2e] bg-opacity-90
-                 rounded-xl p-4 shadow-xl
-                items-center justify-between">
-            
-            <button class="flex w-full bg-red-horizon justify-center text-white p-2 rounded" (click)="showModal()" >
+    <!-- Right Column: Scrollable Reports list with an adjusted left margin for gap -->
+    <div class="w-1/3 h-[calc(100vh-5rem)] overflow-y-auto" style="margin-left: calc(66.6667% + 1rem)">
+      <div class="reports pb-16">
+        <!-- Reports List -->
+        <div class="mb-6">
+          <div class="bg-[#131313] border-2 border-black rounded-xl p-4 shadow-xl">
+            <div class="bg-[#131313] rounded-3xl p-4 flex justify-center">
+              <button
+                class="create-report text-white px-4 py-2 rounded-3xl mb-4"
+                (click)="showModal()"
+              >
                 Create Report
-            </button>
-            <app-generate-report-modal *ngIf="isModalVisible" [industries]="industries" [continents]="continents" [alerts]="alerts" [devices]="devices" [resolutions]="resolutions" [events]="events" (close)="hideModal()"></app-generate-report-modal>
+              </button>
+              <app-generate-report-modal
+                *ngIf="isModalVisible"
+                [industries]="industries"
+                [continents]="continents"
+                [alerts]="alerts"
+                [devices]="devices"
+                [resolutions]="resolutions"
+                [events]="events"
+                (close)="hideModal()"
+              ></app-generate-report-modal>
+            </div>
+            <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4">
+              <li
+                *ngFor="let report of reports"
+                [ngClass]="{
+                  'bg-[#3d0710] border-2 border-white': report.pdf_id === selectedPdfId,
+                  'bg-[#2E2E2E]': report.pdf_id !== selectedPdfId
+                }"
+                class="rounded-xl p-4 shadow-md"
+              >
+                <!-- Title -->
+                <div class="text-white font-semibold mb-1">
+                  {{ report.title }}
+                </div>
+                <!-- Dates & Industry -->
+                <div class="text-sm text-gray-300 mb-2">
+                  <p>{{ report.date_start }} - {{ report.date_end }}</p>
+                  <p>Industry: {{ report.industry }}</p>
+                </div>
+                <!-- Actions -->
+                <div class="flex justify-between">
+                  <button (click)="deleteReport(report.id)" class="text-red-400 hover:underline text-sm">
+                    Delete
+                  </button>
+                  <button (click)="openPdf(report.pdf_id)" class="text-blue-400 hover:underline text-sm">
+                    View PDF
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
+      </div>
     </div>
-
-
-    
-    
-
-    <!-- <div class="mt-6">
-        <h2 class="text-xl font-semibold">Generate PDF</h2>
-        <button (click)="generatePdf()" class="bg-green-600 text-white p-2 rounded">
-            Download Reports as PDF
-        </button>
-    </div> -->
+  </div>
 </div>

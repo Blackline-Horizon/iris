@@ -1,10 +1,26 @@
-.reports {
-    background-color: #292929;
-}
+
 
 .text-red-horizon {
     color: #AE142A;
 }
+
+.create-report {
+    display: block;
+    width: 35%;
+    border-radius: 30px;
+    border-color: rgb(82, 8, 8);
+    background-color: #510914;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: auto; /* Center the button horizontally */
+    margin-right: auto; /* Center the button horizontally */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s;
+  }
+  .create-report:hover {
+    background-color: #5C1923;
+  }
 
 body {
     font-family: Arial, sans-serif;
