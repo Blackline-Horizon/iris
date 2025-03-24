@@ -133,7 +133,7 @@
   }
   
   .filter-toggle-button:hover {
-    background-color: #c0392b; /* Changed from #2980b9 to dark red */
+    background-color: #A6192Eaa; /* Changed from #2980b9 to dark red */
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4); /* Changed from rgba(52, 152, 219, 0.4) to red */
   }
@@ -156,7 +156,7 @@
   }
   
   .reset-all-button:hover {
-    background-color: #c0392b;
+    background-color: #A6192Eaa;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
   }

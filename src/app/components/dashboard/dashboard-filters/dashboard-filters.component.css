@@ -57,7 +57,7 @@
 }
 
 .filter-header:hover h3 {
-  color: #e74c3c; /* Changed from #3498db to red */
+  color: #a6192eaa; /* Changed from #3498db to red */
 }
 
 .filter-header h3 {
@@ -75,7 +75,7 @@
 }
 
 .filter-header i {
-  color: #e74c3c; /* Changed from #3498db to red */
+  color: #A6192E; /* Changed from #3498db to red */
   font-size: 0.8rem;
   transition: transform 0.3s ease;
 }
@@ -91,7 +91,7 @@
 }
 
 .select-all-btn:hover {
-  color: #e74c3c; /* Changed from #3498db to red */
+  color: #a6192eaa; /* Changed from #3498db to red */
   text-decoration: underline;
 }
 
@@ -148,12 +148,12 @@
 }
 
 .checkbox-container:hover .checkmark {
-  border-color: #e74c3c; /* Changed from #3498db to red */
+  border-color: #A6192E; /* Changed from #3498db to red */
 }
 
 .checkbox-container input:checked ~ .checkmark {
-  background-color: #e74c3c; /* Changed from #3498db to red */
-  border-color: #e74c3c; /* Changed from #3498db to red */
+  background-color: #A6192E; /* Changed from #3498db to red */
+  border-color: rgb(146, 36, 24); /* Changed from #3498db to red */
 }
 
 .checkmark:after {
@@ -244,7 +244,7 @@
 
 .date-input input:focus {
   outline: none;
-  border-color: #e74c3c; /* Changed from #3498db to red */
+  border-color: #A6192E; /* Changed from #3498db to red */
   box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.25); /* Changed from rgba(52, 152, 219, 0.25) to red */
 }
 
@@ -267,14 +267,14 @@
 }
 
 .apply-btn {
-  background-color: #e74c3c; /* Changed from #3498db to red */
+  background-color: #A6192E; /* Changed from #3498db to red */
   color: white;
   flex: 2;
   box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3); /* Changed from rgba(52, 152, 219, 0.3) to red */
 }
 
 .apply-btn:hover {
-  background-color: #c0392b; /* Changed from #217dbb to dark red */
+  background-color: #a6192eaa; /* Changed from #217dbb to dark red */
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(231, 76, 60, 0.4); /* Changed from rgba(52, 152, 219, 0.4) to red */
 }
@@ -312,7 +312,7 @@
 }
 
 .filter-content.open::-webkit-scrollbar-thumb:hover {
-  background: #c0392b; /* Changed from #217dbb to dark red */
+  background: #a6192eaa; /* Changed from #217dbb to dark red */
 }
 
 /* Media Queries */

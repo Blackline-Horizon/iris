@@ -32,7 +32,15 @@ export class GenerateReportModalComponent {
     devices:[],
     resolutions:[],
     events:[]
-  }
+  };
+
+  showDropdown: Record<string, boolean> = {
+    alerts: false,
+    devices: false,
+    resolutions: false,
+    events: false,
+    continents: false
+  };
 
   closeModal(): void {
     this.close.emit();
@@ -89,6 +97,10 @@ export class GenerateReportModalComponent {
         throw err;
       })
     this.closeModal();
+  }
+
+  toggleDropdown(field: string): void {
+    this.showDropdown[field] = !this.showDropdown[field];
   }
 
 }

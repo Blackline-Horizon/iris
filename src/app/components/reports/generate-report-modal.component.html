@@ -1,6 +1,8 @@
 <div class="modal-overlay pl-64 md:pl-64 pb-16" (click)="closeModal()">
     <div class="modal-content overflow-y-auto max-h-[90vh] w-full max-w-full bg-gray-800 p-6 rounded" (click)="$event.stopPropagation()">
-      <h2 class="text-2xl mb-8 font-semibold text-white">Create New Report</h2>
+      <h2 style="color: #ffffff; margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+        <i class="fas " style="margin-right: 8px;"></i>Create New Report
+      </h2>
       <form (ngSubmit)="createReport()" class="form-group flex flex-col space-y-4">
         <!-- Report Name -->
         <div class="flex items-center space-x-4">
@@ -17,95 +19,110 @@
           <label class="text-white w-32">End Date</label>
           <input type="date" [(ngModel)]="newReport.date_end" name="end_date" class="flex-1 p-2 border border-gray-300 rounded" required />
         </div>
+        <h2 style="color: #ffffff; margin-top: 0; font-size: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1)">
+          <i class="fas " style="margin-right: 8px;"></i>
+        </h2>
         <!-- Continents -->
-        <div class="flex flex-col items-center w-full mt-6">
+        <div class="flex flex-col items-center w-full mt-6 ">
           <label class="text-white mb-2 text-lg font-semibold">Continents</label>
           <div class="w-full flex justify-center">
             <div class="grid sm:grid-cols-3 md:grid-cols-3 gap-3 max-w-3xl">
               <ng-container *ngFor="let type of continents">
-                <label class="flex items-center space-x-2 bg-zinc-600 px-3 py-2 rounded-md hover:bg-zinc-500 transition duration-150 ease-in-out cursor-pointer shadow-sm">
+                <label class="checkbox-container">
                   <input 
                     type="checkbox" 
                     (change)="onCheckboxChange('continents', type, $event)" 
                     class="accent-red-800 h-4 w-4 rounded" />
+                    <span class="checkmark"></span>
                   <span class="text-white text-sm">{{ type }}</span>
                 </label>
               </ng-container>
             </div>
           </div>
         </div>
+
+        <h2 style="color: #ffffff; margin-top: 0; font-size: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1)">
+        </h2>
         <!-- Industry Dropdown -->
         <div class="flex items-center space-x-4">
           <label class="text-white w-32">Industry</label>
           <select name="industry" [(ngModel)]="newReport.industry"
-            class="flex-1 appearance-none p-2 h-12 bg-zinc-800 text-white border border-gray-300 rounded-2xl"
+            class="flex-1 appearance-none p-2 h-12 bg-zinc-800 text-white border border-gray-300 rounded-xl"
             required>
             <option value="" disabled selected>Select an Industry</option>
             <option *ngFor="let industry of industries" [value]="industry">{{ industry }}</option>
           </select>
         </div>
-        <!-- Alerts -->
-        <div class="flex flex-col items-center w-full mt-6">
-          <label class="text-white mb-2 text-lg font-semibold">Alerts</label>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full max-w-3xl">
-            <ng-container *ngFor="let type of alerts">
-              <label class="flex items-center space-x-2 bg-zinc-600 px-3 py-2 rounded-md hover:bg-zinc-500 transition duration-150 ease-in-out cursor-pointer shadow-sm">
-                <input 
-                  type="checkbox" 
-                  (change)="onCheckboxChange('alerts', type, $event)" 
-                  class="accent-red-800 h-4 w-4 rounded" />
-                <span class="text-white text-sm">{{ type }}</span>
-              </label>
-            </ng-container>
+        <!-- Alerts Dropdown with Checkboxes -->
+        <div class="dropdown-wrapper">
+          <div class="flex flex-col items-center">
+            <label class="text-white mb-2 text-lg font-semibold" (click)="toggleDropdown('alerts')">Alerts</label>
+            <div *ngIf="showDropdown['alerts']" class="grid grid-cols-7 gap-2">
+              <ng-container *ngFor="let type of alerts">
+                <label class="checkbox-container">
+                  {{ type }}
+                  <input type="checkbox" (change)="onCheckboxChange('alerts', type, $event)" />
+                  <span class="checkmark"></span>
+                </label>
+              </ng-container>
+            </div>
           </div>
         </div>
-        <!-- Devices -->
-        <div class="flex flex-col items-center w-full mt-6">
-          <label class="text-white mb-2 text-lg font-semibold">Devices</label>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full max-w-3xl">
-            <ng-container *ngFor="let type of devices">
-              <label class="flex items-center space-x-2 bg-zinc-600 px-3 py-2 rounded-md hover:bg-zinc-500 transition duration-150 ease-in-out cursor-pointer shadow-sm">
-                <input 
-                  type="checkbox" 
-                  (change)="onCheckboxChange('devices', type, $event)" 
-                  class="accent-red-800 h-4 w-4 rounded" />
-                <span class="text-white text-sm">{{ type }}</span>
-              </label>
-            </ng-container>
+
+
+       <!-- Devices Dropdown -->
+        <div class="dropdown-wrapper">
+          <div class="flex flex-col items-center">
+            <label class="text-white mb-2 text-lg font-semibold" (click)="toggleDropdown('devices')">Devices</label>
+            <div *ngIf="showDropdown['devices']" class="grid grid-cols-5 gap-2">
+              <ng-container *ngFor="let type of devices">
+                <label class="checkbox-container">
+                  {{ type }}
+                  <input type="checkbox" (change)="onCheckboxChange('devices', type, $event)" />
+                  <span class="checkmark"></span>
+                </label>
+              </ng-container>
+            </div>
           </div>
         </div>
-        <!-- Resolutions -->
-        <div class="flex flex-col items-center w-full mt-6">
-          <label class="text-white mb-2 text-lg font-semibold">Resolutions</label>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full max-w-3xl">
-            <ng-container *ngFor="let type of resolutions">
-              <label class="flex items-center space-x-2 bg-zinc-600 px-3 py-2 rounded-md hover:bg-zinc-500 transition duration-150 ease-in-out cursor-pointer shadow-sm">
-                <input 
-                  type="checkbox" 
-                  (change)="onCheckboxChange('resolutions', type, $event)" 
-                  class="accent-red-800 h-4 w-4 rounded" />
-                <span class="text-white text-sm">{{ type }}</span>
-              </label>
-            </ng-container>
+
+        <!-- Resolutions Dropdown -->
+        <div class="dropdown-wrapper">
+          <div class="flex flex-col items-center">
+            <label class="text-white mb-2 text-lg font-semibold" (click)="toggleDropdown('resolutions')">Resolutions</label>
+            <div *ngIf="showDropdown['resolutions']" class="grid grid-cols-3 gap-2">
+              <ng-container *ngFor="let type of resolutions">
+                <label class="checkbox-container">
+                  {{ type }}
+                  <input type="checkbox" (change)="onCheckboxChange('resolutions', type, $event)" />
+                  <span class="checkmark"></span>
+                </label>
+              </ng-container>
+            </div>
           </div>
         </div>
-        <!-- Events -->
-        <div class="flex flex-col items-center w-full mt-6">
-          <label class="text-white mb-2 text-lg font-semibold">Events</label>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full max-w-3xl">
-            <ng-container *ngFor="let type of events">
-              <label class="flex items-center space-x-2 bg-zinc-600 px-3 py-2 rounded-md hover:bg-zinc-500 transition duration-150 ease-in-out cursor-pointer shadow-sm">
-                <input 
-                  type="checkbox" 
-                  (change)="onCheckboxChange('events', type, $event)" 
-                  class="accent-red-800 h-4 w-4 rounded" />
-                <span class="text-white text-sm">{{ type }}</span>
-              </label>
-            </ng-container>
+
+
+
+       <!-- Events Dropdown -->
+        <div class="dropdown-wrapper">
+          <div class="flex flex-col items-center">
+            <label class="text-white mb-2 text-lg font-semibold" (click)="toggleDropdown('events')">Events</label>
+            <div *ngIf="showDropdown['events']" class="grid grid-cols-3 gap-2">
+              <ng-container *ngFor="let type of events">
+                <label class="checkbox-container">
+                  {{ type }}
+                  <input type="checkbox" (change)="onCheckboxChange('events', type, $event)" />
+                  <span class="checkmark"></span>
+                </label>
+              </ng-container>
+            </div>
           </div>
         </div>
+
+
         <!-- Submit -->
-        <button type="submit" class="flex mx-auto w-1/4 bg-[#5C1923] border-[#7b212f] justify-center text-white p-2 mt-8 rounded-3xl">
+        <button type="submit" class="create-report w-1/3 center">
           Create Report
         </button>
       </form>
