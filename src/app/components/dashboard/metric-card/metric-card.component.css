@@ -21,7 +21,7 @@
   left: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(to bottom, #e74c3c, #c0392b); /* Changed from #3498db, #2980b9 to red */
+  background: linear-gradient(to bottom, #A6192E, #A6192E); /* Changed from #3498db, #2980b9 to red */
   transition: all 0.3s ease;
 }
 
@@ -48,7 +48,7 @@
 
 .metric-icon i {
   font-size: 1.25rem;
-  color: #e74c3c; /* Changed from #3498db to red */
+  color: #A6192E; /* Changed from #3498db to red */
   transition: all 0.3s ease;
 }
 

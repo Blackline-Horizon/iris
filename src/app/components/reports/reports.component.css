@@ -4,22 +4,52 @@
     color: #AE142A;
 }
 
+/* Dashboard Header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  
+  .dashboard-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    color: #f0f0f0;
+    position: relative;
+  }
+  
+  .dashboard-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 60px;
+    height: 3px;
+    background-color: #A6192E; /* Changed from #3498db to red */
+    border-radius: 2px;
+  }  
+
 .create-report {
-    display: block;
-    width: 35%;
-    border-radius: 30px;
-    border-color: rgb(82, 8, 8);
-    background-color: #510914;
-    color: #fff;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-left: auto; /* Center the button horizontally */
-    margin-right: auto; /* Center the button horizontally */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    transition: background-color 0.3s;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #A6192E; /* Changed from #3498db to red */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3); /* Changed from rgba(52, 152, 219, 0.3) to red */
   }
   .create-report:hover {
-    background-color: #5C1923;
+    background-color: #a6192eaa;
   }
 
 body {
