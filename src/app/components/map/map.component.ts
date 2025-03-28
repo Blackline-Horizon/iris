@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 (window as any).L = L;
-import 'leaflet.markercluster';
 import { MapDataService } from './map-data.service';
 import { DashboardFiltersComponent } from '../dashboard/dashboard-filters/dashboard-filters.component';
 import { MetricCardComponent } from '../dashboard/metric-card/metric-card.component';
