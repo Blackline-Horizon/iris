@@ -195,7 +195,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             spiderfyDistanceMultiplier: 1.5, // More spacing for spiderfied markers
             
             // IMPROVED: Custom icon creation function for truly circular clusters
-            iconCreateFunction: (cluster) => {
+            iconCreateFunction: (cluster : any) => {
               const count = cluster.getChildCount();
               let size, bgColor, textColor;
               
