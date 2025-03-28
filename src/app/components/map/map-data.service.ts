@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, timeout, tap } from 'rxjs/operators';
 import { EventRecord, FilterOptions, DashboardResponse } from '../dashboard/dashboard-data.service';
-
+import { environment } from '../../../environments/environments.prod';
 export interface MapPoint {
   id?: number;
   latitude: number;
@@ -40,7 +40,7 @@ export interface ViewportBounds {
   providedIn: 'root'
 })
 export class MapDataService {
-  private apiBaseUrl = 'http://127.0.0.1:3001';
+  private apiBaseUrl = environment.ATHENA;
   
   constructor(private http: HttpClient) {}
   

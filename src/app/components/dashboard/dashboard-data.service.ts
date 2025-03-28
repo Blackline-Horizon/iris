@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {environment } from '../../../environments/environments.prod'
 
 export interface EventRecord {
   id: number;
@@ -55,7 +56,7 @@ export interface DashboardResponse {
   providedIn: 'root'
 })
 export class DashboardDataService {
-  private apiBaseUrl = 'http://127.0.0.1:3001';
+  private apiBaseUrl = environment.ATHENA;
   
   constructor(private http: HttpClient) {}
 
