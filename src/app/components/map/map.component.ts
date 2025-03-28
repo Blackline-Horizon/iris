@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 (window as any).L = L;
+import 'leaflet.markercluster';
 import { MapDataService } from './map-data.service';
 import { DashboardFiltersComponent } from '../dashboard/dashboard-filters/dashboard-filters.component';
 import { MetricCardComponent } from '../dashboard/metric-card/metric-card.component';
@@ -182,7 +183,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
           }).addTo(this.map);
           
           // IMPROVED: Initialize marker cluster layer with enhanced settings for stability
-          this.markerLayer = L.markerClusterGroup({
+          this.markerLayer = (L as any).markerClusterGroup({
             disableClusteringAtZoom: 13,
             maxClusterRadius: 60,        // Slightly larger to reduce marker movement
             spiderfyOnMaxZoom: true,
