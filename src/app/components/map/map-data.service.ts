@@ -92,7 +92,7 @@ export class MapDataService {
     }
     
     // Add timeout handling and error catching
-    return this.http.post<DashboardResponse>(`${this.apiBaseUrl}/dashboard_data`, requestBody)
+    return this.http.post<DashboardResponse>(`${this.apiBaseUrl}dashboard_data`, requestBody)
       .pipe(
         timeout(30000), // 30 second timeout
         tap(data => console.log('Map data received:', data ? 'Success' : 'Empty')),

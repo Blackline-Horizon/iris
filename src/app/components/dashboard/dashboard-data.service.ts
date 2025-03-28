@@ -113,7 +113,7 @@ export class DashboardDataService {
     }
     
     // Use the new dashboard_data endpoint with POST method
-    return this.http.post<DashboardResponse>(`${this.apiBaseUrl}/dashboard_data`, requestBody);
+    return this.http.post<DashboardResponse>(`${this.apiBaseUrl}dashboard_data`, requestBody);
   }
 
   // Add method for report data
@@ -162,6 +162,6 @@ export class DashboardDataService {
       requestBody.country = filters.countries;
     }
     
-    return this.http.post<any>(`${this.apiBaseUrl}/report_data`, requestBody);
+    return this.http.post<any>(`${this.apiBaseUrl}report_data`, requestBody);
   }
 }
