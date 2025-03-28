@@ -2,8 +2,11 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy, HostListener, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import * as L from 'leaflet';
-(window as any).L = L;
+declare const L: any; // 👈 use global L, skip module import
+
+// Do NOT do: import * as L from 'leaflet'
+// Do NOT set (window as any).L
+import 'leaflet';
 import 'leaflet.markercluster';
 import { MapDataService } from './map-data.service';
 import { DashboardFiltersComponent } from '../dashboard/dashboard-filters/dashboard-filters.component';
@@ -653,7 +656,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     marker.bindPopup(popup);
     
     // IMPROVED: Track the open popup to handle closing with better event management
-    marker.on('click', (e) => {
+    marker.on('click', (e:any) => {
       L.DomEvent.stopPropagation(e);
       
       // Close any existing popup before opening a new one (prevents multiple popups)
