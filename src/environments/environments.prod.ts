@@ -5,7 +5,7 @@ export const environment = {
     HERMES: 'https://hermes-tn8y.onrender.com/',
     HESTIA: 'https://hestia-2dt0.onrender.com/',
     NYX: 'https://nyx-gqoa.onrender.com/',
-    ORACLE: 'https://13.218.12.171.sslip.io',
+    ORACLE: 'https://oracle.blacklinehorizon.com/',
     cognito: {
       region: 'us-east-1',
       userPoolId: 'us-east-1_Nzk8XOhgr',
